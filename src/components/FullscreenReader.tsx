@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const MIN_SCALE = 0.6;
 const MAX_SCALE = 3;
@@ -17,6 +18,36 @@ export default function FullscreenReader({
 }) {
   const [rotated, setRotated] = useState(startRotated);
   const [scale, setScale] = useState(1);
+  const loadedRef = useRef(false);
+
+  // Restore the user's saved text size and default rotation.
+  useEffect(() => {
+    void supabase
+      .from("user_settings")
+      .select("reader_scale,reader_rotated")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setScale(data.reader_scale || 1);
+          if (!data.reader_rotated) setRotated(false);
+        }
+        loadedRef.current = true;
+      });
+  }, []);
+
+  // Remember text size changes for next time.
+  useEffect(() => {
+    if (!loadedRef.current) return;
+    const t = setTimeout(() => {
+      void supabase.auth.getUser().then(({ data }) => {
+        if (data.user)
+          void supabase
+            .from("user_settings")
+            .upsert({ user_id: data.user.id, reader_scale: scale }, { onConflict: "user_id" });
+      });
+    }, 600);
+    return () => clearTimeout(t);
+  }, [scale]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
