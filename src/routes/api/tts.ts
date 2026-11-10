@@ -1,13 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
+import { getUserContext } from "@/lib/server-user";
 
 export const Route = createFileRoute("/api/tts")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const key = process.env.ELEVENLABS_API_KEY;
+        const ctx = await getUserContext(request);
+        if (ctx instanceof Response) return ctx;
+        const key = ctx.settings?.elevenlabs_key?.trim();
         if (!key) {
-          return new Response("missing_key", { status: 500 });
+          return new Response("no_voice", { status: 400 });
         }
 
         let body: { text?: string; voice_id?: string };
@@ -18,7 +21,7 @@ export const Route = createFileRoute("/api/tts")({
         }
 
         const text = (body.text ?? "").trim();
-        const voiceId = (body.voice_id ?? "").trim();
+        const voiceId = (ctx.settings?.voice_id ?? body.voice_id ?? "").trim();
         if (!text || !voiceId) {
           return new Response("missing_params", { status: 400 });
         }
