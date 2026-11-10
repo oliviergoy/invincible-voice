@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getExtraKnowledge } from "@/lib/knowledge-store";
+import { authFetch, ERROR_HINTS } from "@/lib/auth-fetch";
 import FullscreenReader from "@/components/FullscreenReader";
 
 export const Route = createFileRoute("/dire")({
@@ -47,7 +48,7 @@ const LABELS: Record<Lang, {
     emptyHint: "Vos phrases apparaîtront ici.",
     error: "La phrase n'a pas pu être générée. Réessayez.",
     errorTTS: "La voix n'a pas pu être générée.",
-    voiceUnavailable: "Voix indisponible",
+    voiceUnavailable: "Voix non configurée — voir ⚙",
   },
   en: {
     placeholder: "e.g. me drink, tired sleep, thanks sarah…",
@@ -66,7 +67,7 @@ const LABELS: Record<Lang, {
     emptyHint: "Your sentences will appear here.",
     error: "The sentence could not be generated. Please try again.",
     errorTTS: "The voice could not be generated.",
-    voiceUnavailable: "Voice unavailable",
+    voiceUnavailable: "Voice not set up — see ⚙",
   },
 };
 
@@ -100,7 +101,7 @@ function DirePage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/voices")
+    authFetch("/api/voices")
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((data: { voice_id: string; name: string }) => {
         if (!cancelled) setVoice({ id: data.voice_id, name: data.name });
@@ -146,17 +147,24 @@ function DirePage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/expand", {
+      const res = await authFetch("/api/expand", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           keywords: trimmed,
           lang,
           length: "long",
-          extraKnowledge: getExtraKnowledge(),
+          extraKnowledge: await getExtraKnowledge(),
         }),
       });
-      if (!res.ok) throw new Error("expand");
+      if (!res.ok) {
+        const err = (await res.json().catch(() => ({}))) as { error?: string };
+        if (err.error && ERROR_HINTS[err.error]) {
+          setError(ERROR_HINTS[err.error]);
+          return;
+        }
+        throw new Error("expand");
+      }
       const data = (await res.json()) as { text?: string };
       const sentence = (data.text ?? "").trim();
       if (!sentence) throw new Error("empty");
@@ -208,7 +216,7 @@ function DirePage() {
       stopAudio();
       setTtsState((s) => ({ ...s, [item.id]: "loading" }));
       try {
-        const res = await fetch("/api/tts", {
+        const res = await authFetch("/api/tts", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ text: item.sentence, voice_id: voice.id }),
