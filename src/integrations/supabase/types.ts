@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      user_documents: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          size: number
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          size?: number
+          text: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          size?: number
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          ai_key: string
+          ai_provider: string
+          bio: string
+          display_name: string
+          elevenlabs_key: string
+          reader_rotated: boolean
+          reader_scale: number
+          updated_at: string
+          user_id: string
+          voice_id: string
+        }
+        Insert: {
+          ai_key?: string
+          ai_provider?: string
+          bio?: string
+          display_name?: string
+          elevenlabs_key?: string
+          reader_rotated?: boolean
+          reader_scale?: number
+          updated_at?: string
+          user_id: string
+          voice_id?: string
+        }
+        Update: {
+          ai_key?: string
+          ai_provider?: string
+          bio?: string
+          display_name?: string
+          elevenlabs_key?: string
+          reader_rotated?: boolean
+          reader_scale?: number
+          updated_at?: string
+          user_id?: string
+          voice_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
