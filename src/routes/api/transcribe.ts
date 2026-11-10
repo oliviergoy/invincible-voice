@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
+import { getUserContext } from "@/lib/server-user";
 
 const MAX_FILE_BYTES = 20 * 1024 * 1024;
 const MODEL = "openai/gpt-transcribe";
@@ -15,6 +16,8 @@ export const Route = createFileRoute("/api/transcribe")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const ctx = await getUserContext(request);
+        if (ctx instanceof Response) return ctx;
         const key = process.env.LOVABLE_API_KEY;
         if (!key) {
           return jsonError("missing_key", 500);

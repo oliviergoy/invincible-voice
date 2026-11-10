@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
+import { callUserAI, getUserContext, jsonResponse } from "@/lib/server-user";
 
-function buildSystemPrompt(lang: "fr" | "en", length: "brief" | "long") {
+function buildSystemPrompt(lang: "fr" | "en", length: "brief" | "long", name: string) {
+  const who = name || "l'utilisateur";
   const lengthRule =
     length === "brief"
       ? "- La phrase doit être COURTE (8 mots maximum)."
       : "- La phrase peut être longue et développée si le contexte le demande.";
 
-  const baseFr = `Tu es l'assistant d'Olivier Goy, entrepreneur français atteint de SLA. Olivier ne peut plus parler facilement et tape des mots-clés. Ton rôle : transformer ses mots-clés en UNE seule phrase naturelle, parlée à la première personne, telle qu'Olivier la dirait à voix haute à son interlocuteur (sa compagne, un proche, un collègue, un soignant).
+  const baseFr = `Tu es l'assistant de ${who}, qui ne peut plus parler facilement et tape des mots-clés. Ton rôle : transformer ses mots-clés en UNE seule phrase naturelle, parlée à la première personne, telle que ${who} la dirait à voix haute à son interlocuteur (sa compagne, un proche, un collègue, un soignant).
 
 RÈGLES STRICTES
 - Tu produis UNE SEULE phrase. Pas de préambule, pas de guillemets, pas de commentaire, pas de signature.
@@ -26,7 +28,7 @@ EXEMPLES
 - "merci virginie belle" → "Merci Virginie, tu es belle."
 - "appeler clément" → "J'aimerais appeler Clément s'il te plaît."`;
 
-  const baseEn = `You are the assistant of Olivier Goy, a French entrepreneur with ALS. Olivier can no longer speak easily and types keywords. Your role: transform his keywords into a SINGLE natural sentence, spoken in the first person, as Olivier would say it aloud to his interlocutor (his partner, a loved one, a colleague, a caregiver).
+  const baseEn = `You are the assistant of ${who}, who can no longer speak easily and types keywords. Your role: transform his keywords into a SINGLE natural sentence, spoken in the first person, as ${who} would say it aloud to his interlocutor (his partner, a loved one, a colleague, a caregiver).
 
 STRICT RULES
 - Produce a SINGLE sentence. No preamble, no quotes, no commentary, no signature.
@@ -52,13 +54,8 @@ export const Route = createFileRoute("/api/expand")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const key = process.env.ANTHROPIC_API_KEY;
-        if (!key) {
-          return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY manquante" }), {
-            status: 500,
-            headers: { "content-type": "application/json" },
-          });
-        }
+        const ctx = await getUserContext(request);
+        if (ctx instanceof Response) return ctx;
 
         let body: {
           keywords?: string;
@@ -93,7 +90,7 @@ export const Route = createFileRoute("/api/expand")({
 
         const maxTokens = length === "brief" ? 100 : 200;
 
-        let system = buildSystemPrompt(lang, length);
+        let system = buildSystemPrompt(lang, length, ctx.settings?.display_name?.trim() ?? "");
         const extra = (body.extraKnowledge ?? "").trim();
         if (extra) {
           system +=
@@ -101,39 +98,9 @@ export const Route = createFileRoute("/api/expand")({
             extra.slice(0, 60_000);
         }
 
-        const upstream = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "x-api-key": key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-6",
-            max_tokens: maxTokens,
-            system,
-            messages: [{ role: "user", content: keywords }],
-          }),
-        });
-
-        if (!upstream.ok) {
-          const text = await upstream.text();
-          console.error("Anthropic expand error", upstream.status, text);
-          return new Response(
-            JSON.stringify({ error: "La phrase n'a pas pu être générée. Réessayez." }),
-            { status: 502, headers: { "content-type": "application/json" } },
-          );
-        }
-
-        const data = (await upstream.json()) as {
-          content?: Array<{ type: string; text?: string }>;
-        };
-        const text =
-          data.content
-            ?.filter((c) => c.type === "text" && typeof c.text === "string")
-            .map((c) => c.text)
-            .join(" ")
-            .trim() ?? "";
+        const result = await callUserAI(ctx.settings, system, [{ role: "user", content: keywords }], maxTokens);
+        if ("error" in result) return jsonResponse({ error: result.error }, result.status);
+        const text = result.text;
 
         return new Response(JSON.stringify({ text }), {
           status: 200,
