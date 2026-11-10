@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 export type KnowledgeDoc = {
   id: string;
   name: string;
@@ -6,24 +8,33 @@ export type KnowledgeDoc = {
   size: number;
 };
 
-const KEY = "olivier.knowledge.docs.v1";
 const MAX_TOTAL_CHARS = 120_000; // ~30k tokens safety cap
 
-export function loadDocs(): KnowledgeDoc[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw) as KnowledgeDoc[];
-    return Array.isArray(arr) ? arr : [];
-  } catch {
-    return [];
-  }
+export async function loadDocs(): Promise<KnowledgeDoc[]> {
+  const { data } = await supabase
+    .from("user_documents")
+    .select("id,name,text,size,created_at")
+    .order("created_at");
+  return (data ?? []).map((d) => ({
+    id: d.id,
+    name: d.name,
+    text: d.text,
+    size: d.size,
+    addedAt: new Date(d.created_at).getTime(),
+  }));
 }
 
-export function saveDocs(docs: KnowledgeDoc[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(docs));
+export async function addDoc(doc: { name: string; text: string; size: number }) {
+  const { error } = await supabase.from("user_documents").insert(doc);
+  if (error) throw error;
+}
+
+export async function deleteDoc(id: string) {
+  await supabase.from("user_documents").delete().eq("id", id);
+}
+
+export async function deleteAllDocs(ids: string[]) {
+  if (ids.length) await supabase.from("user_documents").delete().in("id", ids);
 }
 
 export function buildExtraKnowledge(docs: KnowledgeDoc[]): string {
@@ -40,6 +51,6 @@ export function buildExtraKnowledge(docs: KnowledgeDoc[]): string {
   return parts.join("\n\n");
 }
 
-export function getExtraKnowledge(): string {
-  return buildExtraKnowledge(loadDocs());
+export async function getExtraKnowledge(): Promise<string> {
+  return buildExtraKnowledge(await loadDocs());
 }

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TabNav } from "./dire";
 import { getExtraKnowledge } from "@/lib/knowledge-store";
+import { authFetch, ERROR_HINTS } from "@/lib/auth-fetch";
 import { recordWav } from "@/lib/record-wav";
 import FullscreenReader from "@/components/FullscreenReader";
 
@@ -55,7 +56,7 @@ const LABELS = {
     synth: "Synthèse…",
     placeholder: "Posez votre question…",
     edited: "· édité",
-    voiceUnavailable: "Voix indisponible",
+    voiceUnavailable: "Voix non configurée — voir ⚙",
     errorChat:
       "La réponse n'a pas pu être générée. Vérifiez votre connexion et réessayez.",
     errorTTS: "La voix n'a pas pu être générée pour ce message.",
@@ -78,7 +79,7 @@ const LABELS = {
     synth: "Synthesizing…",
     placeholder: "Ask your question…",
     edited: "· edited",
-    voiceUnavailable: "Voice unavailable",
+    voiceUnavailable: "Voice not set up — see ⚙",
     errorChat:
       "The response could not be generated. Check your connection and try again.",
     errorTTS: "The voice could not be generated for this message.",
@@ -123,7 +124,7 @@ function Index() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/voices")
+    authFetch("/api/voices")
       .then(async (r) => {
         if (!r.ok) throw new Error("voice");
         return r.json();
@@ -168,19 +169,19 @@ function Index() {
       setInput("");
       setLoading(true);
       try {
-        const res = await fetch("/api/chat", {
+        const res = await authFetch("/api/chat", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
             messages: next.map(({ role, content }) => ({ role, content })),
             lang,
             length,
-            extraKnowledge: getExtraKnowledge(),
+            extraKnowledge: await getExtraKnowledge(),
           }),
         });
-        if (!res.ok) throw new Error("chat");
-        const data = (await res.json()) as { text?: string; error?: string };
-        const reply = (data.text ?? "").trim();
+        const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+        if (!res.ok && !(data.error && ERROR_HINTS[data.error])) throw new Error("chat");
+        const reply = res.ok ? (data.text ?? "").trim() : ERROR_HINTS[data.error!];
         setMessages((cur) => [
           ...cur,
           { id: genId(), role: "assistant", content: reply || t.errorChat },
@@ -207,7 +208,7 @@ function Index() {
         const file = await recorder.stop();
         const form = new FormData();
         form.append("file", file, file.name);
-        const res = await fetch("/api/transcribe", { method: "POST", body: form });
+        const res = await authFetch("/api/transcribe", { method: "POST", body: form });
         if (!res.ok) throw new Error("transcribe");
         const data = (await res.json()) as { text?: string };
         const transcript = (data.text ?? "").trim();
@@ -253,7 +254,7 @@ function Index() {
       stopAudio();
       setTtsState((s) => ({ ...s, [msg.id]: "loading" }));
       try {
-        const res = await fetch("/api/tts", {
+        const res = await authFetch("/api/tts", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ text: msg.content, voice_id: voice.id }),

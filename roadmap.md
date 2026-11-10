@@ -1,4 +1,4 @@
 # Roadmap
 
-- [ ] Mettre à jour les clés ANTHROPIC_API_KEY et ELEVENLABS_API_KEY
-- [ ] Rendre l'app utilisable par tous avec des comptes Google, de façon personnalisée (en attente de précisions)
+- [x] Clés ANTHROPIC/ELEVENLABS globales — remplacées par les clés personnelles de chaque compte
+- [x] Comptes Google, voix + clé ElevenLabs perso, documents, réglages d'affichage, clé Claude/ChatGPT perso ; site reste caché

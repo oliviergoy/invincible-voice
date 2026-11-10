@@ -3,17 +3,17 @@ import { useEffect, useRef, useState } from "react";
 import { TabNav } from "./dire";
 import {
   loadDocs,
-  saveDocs,
+  addDoc,
+  deleteDoc,
+  deleteAllDocs,
   type KnowledgeDoc,
 } from "@/lib/knowledge-store";
+import { ProfileSettings } from "@/components/ProfileSettings";
 
 export const Route = createFileRoute("/parametres")({
   component: ParametresPage,
 });
 
-function genId() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
 
 async function extractPdf(file: File): Promise<string> {
   const pdfjs = await import("pdfjs-dist");
@@ -75,14 +75,14 @@ function ParametresPage() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    setDocs(loadDocs());
+    void loadDocs().then(setDocs);
   }, []);
 
   const onFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     setBusy(true);
     setError(null);
-    const added: KnowledgeDoc[] = [];
+    let added = 0;
     for (const file of Array.from(files)) {
       try {
         const text = await extractText(file);
@@ -90,32 +90,22 @@ function ParametresPage() {
           setError(`Aucun texte extrait de ${file.name}.`);
           continue;
         }
-        added.push({
-          id: genId(),
-          name: file.name,
-          text,
-          addedAt: Date.now(),
-          size: file.size,
-        });
+        await addDoc({ name: file.name, text, size: file.size });
+        added++;
       } catch {
         setError(
           `Impossible de lire ${file.name}. Formats supportés : PDF, Word (.docx), texte (.txt).`,
         );
       }
     }
-    if (added.length) {
-      const next = [...docs, ...added];
-      setDocs(next);
-      saveDocs(next);
-    }
+    if (added) setDocs(await loadDocs());
     if (inputRef.current) inputRef.current.value = "";
     setBusy(false);
   };
 
   const remove = (id: string) => {
-    const next = docs.filter((d) => d.id !== id);
-    setDocs(next);
-    saveDocs(next);
+    setDocs(docs.filter((d) => d.id !== id));
+    void deleteDoc(id);
   };
 
   const totalChars = docs.reduce((s, d) => s + d.text.length, 0);
@@ -135,14 +125,19 @@ function ParametresPage() {
           className="mt-4 max-w-[560px] text-sm sm:text-[15px]"
           style={{ color: "var(--muted)" }}
         >
-          Ajoutez des documents (PDF, Word, texte) pour enrichir les réponses
-          d'Olivier. Les fichiers restent dans ce navigateur.
+          Votre voix, vos clés et vos documents sont enregistrés dans votre
+          compte et vous suivent sur tous vos appareils.
         </p>
       </header>
 
       <TabNav active="settings" />
 
-      <div className="mt-10">
+      <ProfileSettings />
+
+      <h2 className="font-display mt-12 text-[22px] italic" style={{ color: "var(--gold)" }}>
+        Mes documents
+      </h2>
+      <div className="mt-4">
         <div
           className="rounded-2xl border p-6 text-center"
           style={{
@@ -194,8 +189,8 @@ function ParametresPage() {
               <button
                 type="button"
                 onClick={() => {
+                  void deleteAllDocs(docs.map((d) => d.id));
                   setDocs([]);
-                  saveDocs([]);
                 }}
                 className="underline transition-opacity hover:opacity-80"
               >
