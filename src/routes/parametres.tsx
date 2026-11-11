@@ -16,7 +16,7 @@ export const Route = createFileRoute("/parametres")({
 
 
 async function extractPdf(file: File): Promise<string> {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.min.mjs");
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   const workerUrl = (await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url"))
     .default;
   (pdfjs as unknown as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc =
