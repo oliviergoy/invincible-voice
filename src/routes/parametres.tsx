@@ -32,7 +32,8 @@ async function extractPdf(file: File): Promise<string> {
       .join(" ");
     out += text + "\n\n";
   }
-  return out.trim();
+  // Postgres rejects NUL chars, common in print-ready PDFs
+  return out.replace(/\u0000/g, "").replace(/[\u0001-\u0008\u000B\u000C\u000E-\u001F]/g, " ").trim();
 }
 
 async function extractDocx(file: File): Promise<string> {
@@ -90,12 +91,14 @@ function ParametresPage() {
           setError(`Aucun texte extrait de ${file.name}.`);
           continue;
         }
-        await addDoc({ name: file.name, text, size: file.size });
+        const clean = text.replace(/\u0000/g, "");
+        await addDoc({ name: file.name, text: clean, size: file.size });
         added++;
       } catch (err) {
         console.error("extract failed", err);
         setError(
-          `Impossible de lire ${file.name}. Formats supportés : PDF, Word (.docx), texte (.txt).`,
+          `Impossible de lire ${file.name}. Formats supportés : PDF, Word (.docx), texte (.txt).` +
+            (err instanceof Error && err.message ? ` (${err.message})` : ""),
         );
       }
     }
