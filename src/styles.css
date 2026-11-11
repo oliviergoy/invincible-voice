@@ -3,33 +3,35 @@
 @import "tw-animate-css";
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-bg-2: var(--bg-2);
-  --color-surface: var(--surface);
-  --color-gold: var(--gold);
-  --color-gold-deep: var(--gold-deep);
-  --color-cream: var(--cream);
-  --color-cream-soft: var(--cream-soft);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ask: var(--ask);
+  --color-say: var(--say);
   --color-muted: var(--muted);
-  --color-edge: var(--edge);
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Jost", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Jost", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --bg: #0A1628;
-  --bg-2: #1a2b47;
-  --surface: #14233B;
-  --gold: #C9A158;
-  --gold-deep: #8E6F2E;
-  --cream: #F2E9D8;
-  --cream-soft: #D8CFC0;
-  --muted: #8B92A1;
-  --edge: rgba(201, 161, 88, 0.18);
+  --paper: #F3EEE4;
+  --ink: #1B1B1F;
+  --muted: #45454D;
+  --ask: #2F7BC4;
+  --say: #E36A24;
+  --white: #FFFFFF;
+  /* legacy aliases so older screens follow the new palette */
+  --bg: var(--paper);
+  --bg-2: var(--paper);
+  --surface: var(--white);
+  --gold: var(--ink);
+  --gold-deep: var(--ink);
+  --cream: var(--ink);
+  --cream-soft: var(--ink);
+  --edge: var(--ink);
 }
 
 * {
-  border-color: var(--edge);
+  border-color: var(--ink);
 }
 
 html, body {
@@ -41,14 +43,10 @@ html, body {
 }
 
 body {
-  background-image:
-    radial-gradient(ellipse 80% 60% at 50% 0%, var(--bg-2) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(201, 161, 88, 0.07) 0%, transparent 70%);
-  background-attachment: fixed;
   min-height: 100vh;
 }
 
-.font-display { font-family: var(--font-display); letter-spacing: -0.015em; }
+.font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; }
 .font-body { font-family: var(--font-body); }
 
 /* Animations */
@@ -69,7 +67,7 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
   width: 12px; height: 12px;
-  border: 1.5px solid rgba(201,161,88,0.3);
+  border: 1.5px solid rgba(27,27,31,0.3);
   border-top-color: var(--gold);
   border-radius: 999px;
   display: inline-block;
@@ -78,18 +76,46 @@ body {
 }
 
 @keyframes softPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(201,161,88,0.5); }
-  50% { box-shadow: 0 0 0 6px rgba(201,161,88,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(27,27,31,0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(27,27,31,0); }
 }
 .pulse-gold { animation: softPulse 1.6s ease-in-out infinite; }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(201,161,88,0.18); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(201,161,88,0.3); }
+::-webkit-scrollbar-thumb { background: rgba(27,27,31,0.25); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(27,27,31,0.3); }
 
 textarea, input { font-family: var(--font-body); }
 textarea:focus, input:focus { outline: none; }
 
-::selection { background: rgba(201,161,88,0.3); color: var(--cream); }
+::selection { background: var(--say); color: var(--ink); }
+
+/* Components */
+@utility btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 20px; border-radius: 999px;
+  border: 2px solid var(--ink); font-weight: 500; font-size: 16px;
+  transition: opacity 150ms;
+  &:hover { opacity: 0.85; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+@utility btn-primary { background: var(--ink); color: var(--paper); }
+@utility btn-secondary { background: transparent; color: var(--ink); }
+@utility btn-say { background: var(--say); color: var(--ink); }
+@utility btn-ask { background: var(--ask); color: var(--white); }
+@utility chip {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
+  border-radius: 999px; background: var(--white); color: var(--ink);
+  border: 2px dashed var(--ink); font-size: 16px;
+  &:hover { border-style: solid; }
+}
+@utility field {
+  width: 100%; background: var(--white); color: var(--ink);
+  border: 2px solid var(--ink); border-radius: 16px; padding: 10px 14px; font-size: 19px;
+}
+@utility composer {
+  display: flex; align-items: center; gap: 8px; background: var(--white);
+  border: 3px solid var(--ink); border-radius: 999px; padding: 8px;
+}
