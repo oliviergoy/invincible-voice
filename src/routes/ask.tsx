@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TabNav } from "./dire";
 import { getExtraKnowledge } from "@/lib/knowledge-store";
@@ -319,10 +319,21 @@ function Index() {
           style={{ fontWeight: 300, color: "var(--cream)" }}
         >
           Invincible{" "}
-          <span className="italic" style={{ color: "var(--gold)" }}>
+          <span style={{ color: "var(--gold)" }}>
             Voice
           </span>
         </h1>
+        <Link
+          to="/parametres"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-[11.5px] transition-opacity hover:opacity-80"
+          style={{
+            borderColor: "var(--edge)",
+            background: "rgba(201,161,88,0.06)",
+            color: "var(--gold)",
+          }}
+        >
+          ⚙ Paramètres
+        </Link>
         <p
           className="mt-4 max-w-[520px] text-sm sm:text-[15px]"
           style={{ color: "var(--muted)" }}
@@ -404,7 +415,7 @@ function Index() {
       <div ref={scrollRef} className="mt-8 flex-1 space-y-4 overflow-y-auto pb-4">
         {messages.length === 0 && (
           <div
-            className="font-display italic mt-8 text-center text-[15px]"
+            className="font-display mt-8 text-center text-[15px]"
             style={{ color: "var(--muted)" }}
           >
             La conversation commence ici.
@@ -489,7 +500,7 @@ function Index() {
         <button
           type="submit"
           disabled={loading || !input.trim()}
-          className="font-display rounded-full px-5 py-2 text-[14px] italic transition-opacity disabled:opacity-40"
+          className="font-display rounded-full px-5 py-2 text-[14px] transition-opacity disabled:opacity-40"
           style={{
             background: "var(--gold)",
             color: "var(--bg)",
@@ -631,7 +642,7 @@ function MessageBubble({
                 <button
                   type="button"
                   onClick={onSaveEdit}
-                  className="font-display rounded-full px-4 py-1.5 italic transition-opacity hover:opacity-80"
+                  className="font-display rounded-full px-4 py-1.5 transition-opacity hover:opacity-80"
                   style={{ background: "var(--gold)", color: "var(--bg)" }}
                 >
                   {t.save}
@@ -670,7 +681,7 @@ function MessageBubble({
                     type="button"
                     onClick={onPlay}
                     disabled={ttsState === "loading"}
-                    className={`font-display rounded-full px-4 py-1.5 italic transition-opacity hover:opacity-80 ${ttsState === "playing" ? "pulse-gold" : ""}`}
+                    className={`font-display rounded-full px-4 py-1.5 transition-opacity hover:opacity-80 ${ttsState === "playing" ? "pulse-gold" : ""}`}
                     style={{ background: "var(--gold)", color: "var(--bg)" }}
                   >
                     {ttsState === "loading" ? (

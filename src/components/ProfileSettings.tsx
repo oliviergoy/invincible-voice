@@ -92,7 +92,7 @@ export function ProfileSettings() {
         </button>
       </div>
 
-      <h2 className="font-display text-[22px] italic" style={{ color: "var(--gold)" }}>Mon profil</h2>
+      <h2 className="font-display text-[22px]" style={{ color: "var(--gold)" }}>Mon profil</h2>
       <Field label="Mon prénom et nom">
         <input className={inputClass} style={inputStyle} value={form.display_name}
           onChange={(e) => set("display_name", e.target.value)} />
@@ -102,7 +102,7 @@ export function ProfileSettings() {
           onChange={(e) => set("bio", e.target.value)} />
       </Field>
 
-      <h2 className="font-display pt-4 text-[22px] italic" style={{ color: "var(--gold)" }}>Mon IA</h2>
+      <h2 className="font-display pt-4 text-[22px]" style={{ color: "var(--gold)" }}>Mon IA</h2>
       <Field label="Service">
         <select className={inputClass} style={inputStyle} value={form.ai_provider}
           onChange={(e) => set("ai_provider", e.target.value)}>
@@ -119,7 +119,7 @@ export function ProfileSettings() {
           onChange={(e) => setAiKey(e.target.value)} />
       </Field>
 
-      <h2 className="font-display pt-4 text-[22px] italic" style={{ color: "var(--gold)" }}>Ma voix (ElevenLabs)</h2>
+      <h2 className="font-display pt-4 text-[22px]" style={{ color: "var(--gold)" }}>Ma voix (ElevenLabs)</h2>
       <Field label="Ma clé ElevenLabs" hint="elevenlabs.io → Profil → API Keys.">
         <input type="password" autoComplete="off" className={inputClass} style={inputStyle} value={elKey}
           placeholder={hasElKey ? "•••••••• enregistrée — tapez pour remplacer" : "Collez votre clé"}
@@ -130,7 +130,7 @@ export function ProfileSettings() {
           onChange={(e) => set("voice_id", e.target.value)} />
       </Field>
 
-      <h2 className="font-display pt-4 text-[22px] italic" style={{ color: "var(--gold)" }}>Affichage</h2>
+      <h2 className="font-display pt-4 text-[22px]" style={{ color: "var(--gold)" }}>Affichage</h2>
       <label className="flex items-center gap-3 text-[14px]" style={{ color: "var(--cream-soft)" }}>
         <input type="checkbox" checked={form.reader_rotated}
           onChange={(e) => set("reader_rotated", e.target.checked)} />
@@ -139,7 +139,7 @@ export function ProfileSettings() {
 
       <div className="flex items-center gap-4 pt-2">
         <button type="button" onClick={() => void save()}
-          className="font-display rounded-full px-6 py-2.5 text-[14px] italic"
+          className="font-display rounded-full px-6 py-2.5 text-[14px]"
           style={{ background: "var(--gold)", color: "var(--bg)" }}>
           Enregistrer
         </button>

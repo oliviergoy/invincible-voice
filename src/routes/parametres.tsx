@@ -117,7 +117,7 @@ function ParametresPage() {
           className="font-display mt-5 text-[44px] sm:text-[56px] leading-[1.05]"
           style={{ fontWeight: 300, color: "var(--cream)" }}
         >
-          <span className="italic" style={{ color: "var(--gold)" }}>
+          <span style={{ color: "var(--gold)" }}>
             Paramètres
           </span>
         </h1>
@@ -130,11 +130,11 @@ function ParametresPage() {
         </p>
       </header>
 
-      <TabNav active="settings" />
+      <TabNav />
 
       <ProfileSettings />
 
-      <h2 className="font-display mt-12 text-[22px] italic" style={{ color: "var(--gold)" }}>
+      <h2 className="font-display mt-12 text-[22px]" style={{ color: "var(--gold)" }}>
         Mes documents
       </h2>
       <div className="mt-4">
@@ -158,7 +158,7 @@ function ParametresPage() {
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={busy}
-            className="font-display rounded-full px-6 py-2.5 text-[14px] italic transition-opacity disabled:opacity-40"
+            className="font-display rounded-full px-6 py-2.5 text-[14px] transition-opacity disabled:opacity-40"
             style={{ background: "var(--gold)", color: "var(--bg)" }}
           >
             {busy ? "Lecture…" : "Ajouter des fichiers"}
@@ -201,7 +201,7 @@ function ParametresPage() {
 
           {docs.length === 0 ? (
             <div
-              className="font-display italic rounded-2xl border px-4 py-8 text-center text-[14px]"
+              className="font-display rounded-2xl border px-4 py-8 text-center text-[14px]"
               style={{ color: "var(--muted)", borderColor: "var(--edge)" }}
             >
               Aucun document ajouté.

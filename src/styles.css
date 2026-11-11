@@ -12,7 +12,7 @@
   --color-cream-soft: var(--cream-soft);
   --color-muted: var(--muted);
   --color-edge: var(--edge);
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -48,7 +48,7 @@ body {
   min-height: 100vh;
 }
 
-.font-display { font-family: var(--font-display); }
+.font-display { font-family: var(--font-display); letter-spacing: -0.015em; }
 .font-body { font-family: var(--font-body); }
 
 /* Animations */

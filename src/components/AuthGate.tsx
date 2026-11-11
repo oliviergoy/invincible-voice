@@ -31,7 +31,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
       <h1
-        className="font-display text-[44px] sm:text-[56px] leading-[1.05] italic"
+        className="font-display text-[44px] sm:text-[56px] leading-[1.05]"
         style={{ fontWeight: 300, color: "var(--gold)" }}
       >
         Invincible Voice
