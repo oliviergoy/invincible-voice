@@ -7,6 +7,12 @@ import FullscreenReader from "@/components/FullscreenReader";
 
 export const Route = createFileRoute("/dire")({
   component: DirePage,
+  head: () => ({
+    meta: [
+      { title: "Invincible Voice — Je veux te dire" },
+      { property: "og:title", content: "Invincible Voice — Je veux te dire" },
+    ],
+  }),
 });
 
 type TtsState = "idle" | "loading" | "playing";

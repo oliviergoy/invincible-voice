@@ -13,6 +13,12 @@ import { ProfileSettings, Section } from "@/components/ProfileSettings";
 
 export const Route = createFileRoute("/parametres")({
   component: ParametresPage,
+  head: () => ({
+    meta: [
+      { title: "Invincible Voice — Paramètres" },
+      { property: "og:title", content: "Invincible Voice — Paramètres" },
+    ],
+  }),
 });
 
 

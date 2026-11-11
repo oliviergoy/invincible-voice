@@ -8,6 +8,12 @@ import FullscreenReader from "@/components/FullscreenReader";
 
 export const Route = createFileRoute("/ask")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: "Invincible Voice — Demandez-moi" },
+      { property: "og:title", content: "Invincible Voice — Demandez-moi" },
+    ],
+  }),
 });
 
 type Lang = "fr" | "en";
