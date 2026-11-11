@@ -260,7 +260,7 @@ function DirePage() {
           style={{ fontWeight: 300, color: "var(--cream)" }}
         >
           Invincible{" "}
-          <span className="italic" style={{ color: "var(--gold)" }}>
+          <span style={{ color: "var(--gold)" }}>
             Voice
           </span>
         </h1>
@@ -347,7 +347,7 @@ function DirePage() {
       <div ref={scrollRef} className="mt-8 flex-1 space-y-4 overflow-y-auto pb-4">
         {items.length === 0 && (
           <div
-            className="font-display italic mt-8 text-center text-[15px]"
+            className="font-display mt-8 text-center text-[15px]"
             style={{ color: "var(--muted)" }}
           >
             {t.emptyHint}
@@ -399,7 +399,7 @@ function DirePage() {
                     <button
                       type="button"
                       onClick={() => saveEdit(item.id)}
-                      className="font-display rounded-full px-4 py-1.5 italic transition-opacity hover:opacity-80"
+                      className="font-display rounded-full px-4 py-1.5 transition-opacity hover:opacity-80"
                       style={{ background: "var(--gold)", color: "var(--bg)" }}
                     >
                       {t.save}
@@ -438,7 +438,7 @@ function DirePage() {
                         type="button"
                         onClick={() => void playTTS(item)}
                         disabled={state === "loading"}
-                        className={`font-display rounded-full px-4 py-1.5 italic transition-opacity hover:opacity-80 ${state === "playing" ? "pulse-gold" : ""}`}
+                        className={`font-display rounded-full px-4 py-1.5 transition-opacity hover:opacity-80 ${state === "playing" ? "pulse-gold" : ""}`}
                         style={{ background: "var(--gold)", color: "var(--bg)" }}
                       >
                         {state === "loading" ? (
@@ -507,7 +507,7 @@ function DirePage() {
         <button
           type="submit"
           disabled={loading || !keywords.trim()}
-          className="font-display rounded-full px-5 py-2 text-[14px] italic transition-opacity disabled:opacity-40"
+          className="font-display rounded-full px-5 py-2 text-[14px] transition-opacity disabled:opacity-40"
           style={{
             background: "var(--gold)",
             color: "var(--bg)",
