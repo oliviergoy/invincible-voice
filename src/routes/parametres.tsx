@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { Logo } from "@/components/Brand";
 import { useEffect, useRef, useState } from "react";
-import { TabNav } from "./dire";
 import {
   loadDocs,
   addDoc,
@@ -8,7 +9,7 @@ import {
   deleteAllDocs,
   type KnowledgeDoc,
 } from "@/lib/knowledge-store";
-import { ProfileSettings } from "@/components/ProfileSettings";
+import { ProfileSettings, Section } from "@/components/ProfileSettings";
 
 export const Route = createFileRoute("/parametres")({
   component: ParametresPage,
@@ -94,7 +95,9 @@ function ParametresPage() {
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const [email, setEmail] = useState("");
   useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
     void loadDocs().then(setDocs);
   }, []);
 
@@ -134,39 +137,40 @@ function ParametresPage() {
   const totalChars = docs.reduce((s, d) => s + d.text.length, 0);
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[780px] flex-col px-5 pb-10 pt-10 sm:pt-14">
-      <header className="flex flex-col items-center text-center">
-        <h1
-          className="font-display mt-5 text-[44px] sm:text-[56px] leading-[1.05]"
-          style={{ fontWeight: 300, color: "var(--cream)" }}
-        >
-          <span style={{ color: "var(--gold)" }}>
-            Paramètres
-          </span>
-        </h1>
-        <p
-          className="mt-4 max-w-[560px] text-sm sm:text-[15px]"
-          style={{ color: "var(--muted)" }}
-        >
-          Votre voix, vos clés et vos documents sont enregistrés dans votre
-          compte et vous suivent sur tous vos appareils.
-        </p>
+    <div className="mx-auto flex min-h-screen w-full max-w-[980px] flex-col px-5 pb-12">
+      <header className="flex flex-wrap items-center justify-between gap-3 py-5">
+        <Link to="/dire" className="flex min-h-[44px] items-center gap-3">
+          <Logo size={52} />
+          <span className="font-display text-[24px]">Invincible Voice</span>
+        </Link>
+        <nav className="flex flex-wrap gap-2" aria-label="Retour">
+          <Link to="/ask" className="btn btn-ask">Demandez-moi</Link>
+          <Link to="/dire" className="btn btn-say">Je veux te dire</Link>
+        </nav>
       </header>
 
-      <TabNav />
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
+        <h1 className="font-display text-[48px] leading-none sm:text-[72px]">Paramètres</h1>
+        <div className="text-right text-[15px]" style={{ color: "var(--muted)" }}>
+          <div>{email}</div>
+          <button type="button" className="min-h-[44px] underline" style={{ color: "var(--ink)" }}
+            onClick={() => void supabase.auth.signOut()}>
+            Se déconnecter
+          </button>
+        </div>
+      </div>
 
       <ProfileSettings />
 
-      <h2 className="font-display mt-12 text-[22px]" style={{ color: "var(--gold)" }}>
-        Mes documents
-      </h2>
+      <Section num="04" color="var(--ink)" title="Mes documents">
+
       <div className="mt-4">
         <div
           className="rounded-2xl border p-6 text-center"
           style={{
             borderColor: "var(--edge)",
-            background: "rgba(20,35,59,0.4)",
-            borderStyle: "dashed",
+            background: "var(--white)",
+            borderStyle: "dashed", borderWidth: 2,
           }}
         >
           <input
@@ -181,8 +185,7 @@ function ParametresPage() {
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={busy}
-            className="font-display rounded-full px-6 py-2.5 text-[14px] transition-opacity disabled:opacity-40"
-            style={{ background: "var(--gold)", color: "var(--bg)" }}
+            className="btn btn-primary"
           >
             {busy ? "Lecture…" : "Ajouter des fichiers"}
           </button>
@@ -193,7 +196,7 @@ function ParametresPage() {
             PDF · Word (.docx) · Texte (.txt)
           </div>
           {error && (
-            <div className="mt-3 text-[12.5px]" style={{ color: "#e8a87c" }}>
+            <div className="mt-3 text-[12.5px]" style={{ color: "var(--say)" }}>
               {error}
             </div>
           )}
@@ -224,7 +227,7 @@ function ParametresPage() {
 
           {docs.length === 0 ? (
             <div
-              className="font-display rounded-2xl border px-4 py-8 text-center text-[14px]"
+              className="rounded-2xl border-2 px-4 py-8 text-center text-[14px]"
               style={{ color: "var(--muted)", borderColor: "var(--edge)" }}
             >
               Aucun document ajouté.
@@ -234,7 +237,7 @@ function ParametresPage() {
               {docs.map((d) => (
                 <li
                   key={d.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
+                  className="flex items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3"
                   style={{
                     borderColor: "var(--edge)",
                     background: "var(--surface)",
@@ -258,7 +261,7 @@ function ParametresPage() {
                   <button
                     type="button"
                     onClick={() => remove(d.id)}
-                    className="rounded-full border px-3 py-1 text-[12px] transition-opacity hover:opacity-80"
+                    className="btn btn-secondary text-[14px]"
                     style={{
                       color: "var(--muted)",
                       borderColor: "var(--edge)",
@@ -272,6 +275,7 @@ function ParametresPage() {
           )}
         </div>
       </div>
+      </Section>
     </div>
   );
 }
