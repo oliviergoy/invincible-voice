@@ -45,7 +45,7 @@ export function AppHeader({
       </Link>
       <div className="flex flex-wrap items-center gap-3">
         {voiceName ? (
-          <span className="inline-flex min-h-[36px] items-center gap-2 rounded-full border-2 px-4" style={{ background: "var(--white)" }} data-x=" text-[14px]">
+          <span className="inline-flex min-h-[36px] items-center gap-2 rounded-full border-2 px-4 text-[14px]" style={{ background: "var(--white)" }}>
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#2E9E4F" }} />
             {voiceLabel} : {voiceName}
           </span>

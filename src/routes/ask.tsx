@@ -460,7 +460,7 @@ function MessageBubble({
   if (isUser) {
     return (
       <div className="anim-msg-in flex justify-start">
-        <div className="max-w-[85%] rounded-[28px] border-[3px] bg-white px-6 py-4 text-[19px] whitespace-pre-wrap">
+        <div className="max-w-[85%] rounded-[28px] border-[3px] px-6 py-4 text-[19px] whitespace-pre-wrap">
           {msg.content}
         </div>
       </div>
