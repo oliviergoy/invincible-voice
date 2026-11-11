@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TabNav } from "./dire";
 import { getExtraKnowledge } from "@/lib/knowledge-store";
@@ -323,6 +323,17 @@ function Index() {
             Voice
           </span>
         </h1>
+        <Link
+          to="/parametres"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-[11.5px] transition-opacity hover:opacity-80"
+          style={{
+            borderColor: "var(--edge)",
+            background: "rgba(201,161,88,0.06)",
+            color: "var(--gold)",
+          }}
+        >
+          ⚙ Paramètres
+        </Link>
         <p
           className="mt-4 max-w-[520px] text-sm sm:text-[15px]"
           style={{ color: "var(--muted)" }}
