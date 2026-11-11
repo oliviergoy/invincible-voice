@@ -130,7 +130,7 @@ function ParametresPage() {
         </p>
       </header>
 
-      <TabNav active="settings" />
+      <TabNav />
 
       <ProfileSettings />
 

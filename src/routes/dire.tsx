@@ -264,6 +264,17 @@ function DirePage() {
             Voice
           </span>
         </h1>
+        <Link
+          to="/parametres"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-[11.5px] transition-opacity hover:opacity-80"
+          style={{
+            borderColor: "var(--edge)",
+            background: "rgba(201,161,88,0.06)",
+            color: "var(--gold)",
+          }}
+        >
+          ⚙ Paramètres
+        </Link>
         <p
           className="mt-4 max-w-[520px] text-sm sm:text-[15px]"
           style={{ color: "var(--muted)" }}
@@ -566,7 +577,7 @@ function PillGroup({
   );
 }
 
-export function TabNav({ active }: { active: "ask" | "dire" | "settings" }) {
+export function TabNav({ active }: { active?: "ask" | "dire" }) {
   return (
     <div className="mt-8 flex justify-center">
       <div
@@ -594,19 +605,6 @@ export function TabNav({ active }: { active: "ask" | "dire" | "settings" }) {
           }}
         >
           Je veux te dire
-        </Link>
-        <Link
-          to="/parametres"
-          aria-label="Paramètres"
-          title="Paramètres"
-          className="rounded-full px-4 py-1.5 text-[12.5px] transition-colors"
-          style={{
-            background: active === "settings" ? "var(--gold)" : "transparent",
-            color: active === "settings" ? "var(--bg)" : "var(--cream-soft)",
-            fontWeight: active === "settings" ? 500 : 400,
-          }}
-        >
-          ⚙
         </Link>
       </div>
     </div>
