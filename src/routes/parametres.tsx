@@ -16,8 +16,8 @@ export const Route = createFileRoute("/parametres")({
 
 
 async function extractPdf(file: File): Promise<string> {
-  const pdfjs = await import("pdfjs-dist");
-  const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url"))
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const workerUrl = (await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url"))
     .default;
   (pdfjs as unknown as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc =
     workerUrl;
@@ -92,7 +92,8 @@ function ParametresPage() {
         }
         await addDoc({ name: file.name, text, size: file.size });
         added++;
-      } catch {
+      } catch (err) {
+        console.error("extract failed", err);
         setError(
           `Impossible de lire ${file.name}. Formats supportés : PDF, Word (.docx), texte (.txt).`,
         );
