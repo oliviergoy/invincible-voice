@@ -13,7 +13,7 @@ const inputClass = "field mt-2";
 
 export function Section({ num, color, title, children }: { num: string; color: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="grid gap-4 border-t-[3px] py-8 sm:grid-cols-[140px_1fr]">
+    <section className="grid gap-4 py-8 sm:grid-cols-[140px_1fr]">
       <div className="font-display text-[64px] leading-none" style={{ color }}>{num}</div>
       <div className="space-y-5">
         <h2 className="font-display text-[30px] leading-tight">{title}</h2>
@@ -140,7 +140,7 @@ export function ProfileSettings() {
         </Field>
       </Section>
 
-      <div className="flex items-center justify-end gap-4 border-t-[3px] pt-6">
+      <div className="flex items-center justify-end gap-4 pt-6">
         {status && <span className="text-[15px]" style={{ color: "var(--muted)" }}>{status}</span>}
         <button type="button" onClick={() => void save()} className="btn btn-primary px-8">
           Enregistrer
