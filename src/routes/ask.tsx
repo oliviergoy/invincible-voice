@@ -23,22 +23,12 @@ type Message = {
 
 const SUGGESTIONS: Record<Lang, { label: string; prompt: string }[]> = {
   fr: [
-    { label: "Me présenter", prompt: "Présentez-vous en quelques mots." },
-    { label: "Expliquer Invincible Hope", prompt: "Expliquez-moi Invincible Hope." },
-    { label: "Expliquer CURE-ND4ALS", prompt: "Expliquez-moi CURE-ND4ALS." },
-    {
-      label: "Expliquer le Centre IA de l'Institut du Cerveau",
-      prompt: "Expliquez-moi le Centre IA & Data Science de l'Institut du Cerveau.",
-    },
+    { label: "Comment vas-tu ?", prompt: "Comment vas-tu ?" },
+    { label: "Présentes toi stp ?", prompt: "Présentes toi stp ?" },
   ],
   en: [
-    { label: "Introduce yourself", prompt: "Introduce yourself in a few words." },
-    { label: "Explain Invincible Hope", prompt: "Explain Invincible Hope." },
-    { label: "Explain CURE-ND4ALS", prompt: "Explain CURE-ND4ALS." },
-    {
-      label: "Explain the Brain Institute AI Center",
-      prompt: "Explain the Paris Brain Institute Center for AI & Data Science.",
-    },
+    { label: "How are you?", prompt: "How are you?" },
+    { label: "Can you introduce yourself, please?", prompt: "Can you introduce yourself, please?" },
   ],
 };
 

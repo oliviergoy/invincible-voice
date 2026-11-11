@@ -32,7 +32,7 @@ const LABELS: Record<Lang, {
   voiceUnavailable: string;
 }> = {
   fr: {
-    placeholder: "Ex : je boire, fatigué dodo, merci virginie…",
+    placeholder: "Ex : je boire, je dormir…",
     generate: "Générer",
     generating: "…",
     edit: "Éditer",
@@ -51,7 +51,7 @@ const LABELS: Record<Lang, {
     voiceUnavailable: "Voix non configurée — voir ⚙",
   },
   en: {
-    placeholder: "e.g. me drink, tired sleep, thanks sarah…",
+    placeholder: "e.g. me drink, me sleep…",
     generate: "Generate",
     generating: "…",
     edit: "Edit",
@@ -331,7 +331,7 @@ function DirePage() {
 
       {/* Examples */}
       <div className="mt-4 flex flex-wrap justify-center gap-2">
-        {(lang === "fr" ? ["je boire", "fatigué dodo", "merci virginie belle", "SF fou"] : ["me drink", "tired sleep", "thanks sarah", "NY cool"]).map((ex) => (
+        {(lang === "fr" ? ["je boire", "je dormir"] : ["me drink", "me sleep"]).map((ex) => (
           <button
             key={ex}
             type="button"
