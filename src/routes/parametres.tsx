@@ -92,7 +92,8 @@ function ParametresPage() {
         }
         await addDoc({ name: file.name, text, size: file.size });
         added++;
-      } catch {
+      } catch (err) {
+        console.error("extract failed", err);
         setError(
           `Impossible de lire ${file.name}. Formats supportés : PDF, Word (.docx), texte (.txt).`,
         );
