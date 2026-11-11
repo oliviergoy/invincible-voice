@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { AppHeader, ModeTabs, PillGroup } from "@/components/Brand";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getExtraKnowledge } from "@/lib/knowledge-store";
 import { authFetch, ERROR_HINTS } from "@/lib/auth-fetch";
@@ -32,7 +33,7 @@ const LABELS: Record<Lang, {
   voiceUnavailable: string;
 }> = {
   fr: {
-    placeholder: "Ex : je boire, je dormir…",
+    placeholder: "Quelques mots : je boire, je dormir…",
     generate: "Générer",
     generating: "…",
     edit: "Éditer",
@@ -48,7 +49,7 @@ const LABELS: Record<Lang, {
     emptyHint: "Vos phrases apparaîtront ici.",
     error: "La phrase n'a pas pu être générée. Réessayez.",
     errorTTS: "La voix n'a pas pu être générée.",
-    voiceUnavailable: "Voix non configurée — voir ⚙",
+    voiceUnavailable: "Voix non configurée, voir Paramètres",
   },
   en: {
     placeholder: "e.g. me drink, me sleep…",
@@ -67,7 +68,7 @@ const LABELS: Record<Lang, {
     emptyHint: "Your sentences will appear here.",
     error: "The sentence could not be generated. Please try again.",
     errorTTS: "The voice could not be generated.",
-    voiceUnavailable: "Voice not set up — see ⚙",
+    voiceUnavailable: "Voice not set up, see Settings",
   },
 };
 
@@ -135,8 +136,8 @@ function DirePage() {
 
   const t = LABELS[lang];
 
-  const expand = useCallback(async () => {
-    const trimmed = keywords.trim();
+  const expandWith = useCallback(async (raw: string) => {
+    const trimmed = raw.trim();
     if (!trimmed || loading) return;
     if (mode === "asis") {
       setError(null);
@@ -175,7 +176,8 @@ function DirePage() {
     } finally {
       setLoading(false);
     }
-  }, [keywords, loading, lang, mode, t]);
+  }, [loading, lang, mode, t]);
+  const expand = useCallback(() => expandWith(keywords), [expandWith, keywords]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,283 +253,181 @@ function DirePage() {
     [voice, stopAudio, t],
   );
 
+  const last = items[items.length - 1];
+  const lastEditing = last ? editing[last.id] !== undefined : false;
+  const lastState = last ? ttsState[last.id] ?? "idle" : "idle";
+  const history = items.slice(0, -1).reverse();
+
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[780px] flex-col px-5 pb-10 pt-10 sm:pt-14">
-      {/* Header */}
-      <header className="flex flex-col items-center text-center">
-        <h1
-          className="font-display mt-5 text-[44px] sm:text-[56px] leading-[1.05]"
-          style={{ fontWeight: 300, color: "var(--cream)" }}
-        >
-          Invincible{" "}
-          <span style={{ color: "var(--gold)" }}>
-            Voice
-          </span>
-        </h1>
-        <Link
-          to="/parametres"
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-[11.5px] transition-opacity hover:opacity-80"
-          style={{
-            borderColor: "var(--edge)",
-            background: "rgba(201,161,88,0.06)",
-            color: "var(--gold)",
-          }}
-        >
-          ⚙ Paramètres
-        </Link>
-        <p
-          className="mt-4 max-w-[520px] text-sm sm:text-[15px]"
-          style={{ color: "var(--muted)" }}
-        >
-          {lang === "fr"
-            ? "Tapez quelques mots-clés — une phrase complète apparaît, à éditer et à lire à voix haute."
-            : "Type a few keywords — a full sentence appears, ready to edit and read aloud."}
-        </p>
-        <div className="mt-4 min-h-[24px]">
-          {voice ? (
-            <span
-              className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]"
-              style={{
-                borderColor: "var(--edge)",
-                color: "var(--gold)",
-                background: "rgba(201,161,88,0.06)",
-              }}
-            >
-              <span style={{ color: "var(--gold)" }}>●</span> {lang === "fr" ? "Voix" : "Voice"} : {voice.name}
-            </span>
-          ) : voiceFailed ? (
-            <span
-              className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]"
-              style={{ borderColor: "var(--edge)", color: "var(--muted)" }}
-            >
-              {t.voiceUnavailable}
-            </span>
-          ) : null}
-        </div>
-      </header>
+    <div className="flex min-h-screen flex-col">
+      <AppHeader
+        voiceName={voice?.name}
+        voiceFailed={voiceFailed}
+        voiceLabel={lang === "fr" ? "Voix" : "Voice"}
+        unavailableLabel={t.voiceUnavailable}
+      />
+      <ModeTabs active="dire" />
 
-      {/* Tabs */}
-      <TabNav active="dire" />
-
-      {/* Settings */}
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <PillGroup
-          options={[
-            { value: "fr", label: "Français" },
-            { value: "en", label: "English" },
-          ]}
-          value={lang}
-          onChange={(v) => setLang(v as Lang)}
-        />
-        <PillGroup
-          options={[
-            { value: "asis", label: lang === "fr" ? "Tel quel" : "As is" },
-            { value: "improve", label: lang === "fr" ? "Améliorer" : "Improve" },
-          ]}
-          value={mode}
-          onChange={(v) => setMode(v as Mode)}
-        />
-      </div>
-
-      {/* Examples */}
-      <div className="mt-4 flex flex-wrap justify-center gap-2">
-        {(lang === "fr" ? ["je boire", "je dormir"] : ["me drink", "me sleep"]).map((ex) => (
-          <button
-            key={ex}
-            type="button"
-            onClick={() => setKeywords(ex)}
-            className="rounded-full border px-3.5 py-1.5 text-[12.5px] transition-colors"
-            style={{
-              borderColor: "var(--edge)",
-              color: "var(--cream-soft)",
-              background: "transparent",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(201,161,88,0.08)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-            }}
-          >
-            {ex}
-          </button>
-        ))}
-      </div>
-
-      {/* Items */}
-      <div ref={scrollRef} className="mt-8 flex-1 space-y-4 overflow-y-auto pb-4">
-        {items.length === 0 && (
-          <div
-            className="font-display mt-8 text-center text-[15px]"
-            style={{ color: "var(--muted)" }}
-          >
-            {t.emptyHint}
+      <main className="mx-auto flex w-full max-w-[1080px] flex-1 flex-col px-5 pb-8 pt-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <PillGroup
+            options={[
+              { value: "fr", label: "Français" },
+              { value: "en", label: "English" },
+            ]}
+            value={lang}
+            onChange={(v) => setLang(v as Lang)}
+          />
+          <div className="flex flex-wrap gap-2">
+            {(lang === "fr" ? ["je boire", "je dormir"] : ["me drink", "me sleep"]).map((ex) => (
+              <button key={ex} type="button" onClick={() => setKeywords(ex)} className="chip">
+                {ex}
+              </button>
+            ))}
           </div>
-        )}
-        {items.map((item) => {
-          const isEditing = editing[item.id] !== undefined;
-          const state = ttsState[item.id] ?? "idle";
-          return (
-            <div key={item.id} className="anim-msg-in">
-              <div className="px-1 text-[11px] italic" style={{ color: "var(--muted)" }}>
-                {item.keywords}
+          <PillGroup
+            options={[
+              { value: "asis", label: lang === "fr" ? "Tel quel" : "As is" },
+              { value: "improve", label: lang === "fr" ? "Améliorer" : "Improve" },
+            ]}
+            value={mode}
+            onChange={(v) => setMode(v as Mode)}
+          />
+        </div>
+
+        <div ref={scrollRef} className="mt-8 flex-1">
+          {!last && !loading && (
+            <p className="font-display mt-10 text-center text-[22px]" style={{ color: "var(--muted)" }}>
+              {t.emptyHint}
+            </p>
+          )}
+
+          {last && (
+            <div className="anim-msg-in" key={last.id}>
+              <div className="mb-3 text-[13px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--muted)" }}>
+                {lang === "fr" ? "Mots-clés" : "Keywords"} : {last.keywords}
               </div>
-              <div
-                className="mt-1 px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap"
-                style={{
-                  background: "var(--surface)",
-                  color: "var(--cream)",
-                  borderRadius: 16,
-                  border: "1px solid var(--edge)",
-                }}
-              >
-                {isEditing ? (
-                  <textarea
-                    value={editing[item.id] ?? ""}
-                    onChange={(e) =>
-                      setEditing((cur) => ({ ...cur, [item.id]: e.target.value }))
-                    }
-                    rows={Math.min(12, Math.max(3, (editing[item.id] ?? "").split("\n").length + 2))}
-                    className="w-full resize-y bg-transparent text-[15px] leading-relaxed"
-                    style={{ color: "var(--cream)", minHeight: 100 }}
-                    autoFocus
-                  />
-                ) : (
-                  item.sentence
-                )}
+              <div className="relative">
+                <div
+                  className="font-display px-7 py-8 text-[36px] leading-[1.15] whitespace-pre-wrap sm:px-10 sm:py-10 sm:text-[64px]"
+                  style={{ background: "var(--say)", color: "var(--ink)", borderRadius: 36 }}
+                >
+                  {lastEditing ? (
+                    <textarea
+                      aria-label={t.edit}
+                      value={editing[last.id] ?? ""}
+                      onChange={(e) => setEditing((cur) => ({ ...cur, [last.id]: e.target.value }))}
+                      rows={4}
+                      className="field font-display text-[28px]"
+                      autoFocus
+                    />
+                  ) : (
+                    last.sentence
+                  )}
+                </div>
+                <svg className="absolute -bottom-[26px] left-12" width="44" height="30" viewBox="0 0 44 30" aria-hidden="true">
+                  <path d="M0 0 H44 L6 30 Z" fill="var(--say)" />
+                </svg>
               </div>
-              <div className="mt-2.5 flex items-center gap-2 px-1 text-[14px]">
-                {isEditing ? (
+
+              <div className="mt-10 flex flex-wrap items-center justify-end gap-3">
+                {lastEditing ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => cancelEdit(item.id)}
-                      className="rounded-full border px-4 py-1.5 transition-opacity hover:opacity-80"
-                      style={{ color: "var(--muted)", borderColor: "var(--edge)" }}
-                    >
-                      {t.cancel}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => saveEdit(item.id)}
-                      className="font-display rounded-full px-4 py-1.5 transition-opacity hover:opacity-80"
-                      style={{ background: "var(--gold)", color: "var(--bg)" }}
-                    >
-                      {t.save}
-                    </button>
+                    <button type="button" onClick={() => cancelEdit(last.id)} className="btn btn-secondary">{t.cancel}</button>
+                    <button type="button" onClick={() => saveEdit(last.id)} className="btn btn-primary">{t.save}</button>
                   </>
                 ) : (
                   <>
+                    {last.edited && <span className="text-[14px]" style={{ color: "var(--muted)" }}>{t.edited}</span>}
+                    {mode === "improve" && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        disabled={loading}
+                        onClick={() => {
+                          setKeywords(last.keywords);
+                          setTimeout(() => void expandWith(last.keywords), 0);
+                        }}
+                      >
+                        {lang === "fr" ? "Autre phrase" : "Another sentence"}
+                      </button>
+                    )}
                     <button
                       type="button"
-                      onClick={() => setFullscreen({ text: item.sentence, rotated: true })}
-                      className="rounded-full border px-3 py-1.5 transition-opacity hover:opacity-80"
-                      style={{ color: "var(--cream-soft)", borderColor: "var(--edge)" }}
+                      className="btn btn-secondary"
+                      onClick={() => setFullscreen({ text: last.sentence, rotated: true })}
                       title="Plein écran retourné, pour la personne en face"
                     >
-                      {t.fullscreen}
+                      {lang === "fr" ? "Plein écran" : "Full screen"}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setFullscreen({ text: item.sentence, rotated: false })}
-                      className="rounded-full border px-3 py-1.5 transition-opacity hover:opacity-80"
-                      style={{ color: "var(--cream-soft)", borderColor: "var(--edge)" }}
-                      title="Plein écran dans votre sens, sans retourner"
-                    >
-                      {t.fullscreenPlain}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => startEdit(item)}
-                      className="rounded-full border px-4 py-1.5 transition-opacity hover:opacity-80"
-                      style={{ color: "var(--cream-soft)", borderColor: "var(--edge)" }}
-                    >
-                      {t.edit}
-                    </button>
+                    <button type="button" className="btn btn-secondary" onClick={() => startEdit(last)}>{t.edit}</button>
                     {voice && (
                       <button
                         type="button"
-                        onClick={() => void playTTS(item)}
-                        disabled={state === "loading"}
-                        className={`font-display rounded-full px-4 py-1.5 transition-opacity hover:opacity-80 ${state === "playing" ? "pulse-gold" : ""}`}
-                        style={{ background: "var(--gold)", color: "var(--bg)" }}
+                        onClick={() => void playTTS(last)}
+                        disabled={lastState === "loading"}
+                        className={`btn btn-primary min-h-[68px] px-8 text-[22px] ${lastState === "playing" ? "pulse-gold" : ""}`}
                       >
-                        {state === "loading" ? (
-                          <>
-                            <span className="spinner" /> {t.synth}
-                          </>
-                        ) : state === "playing" ? (
+                        {lastState === "loading" ? (
+                          <><span className="spinner" /> {t.synth}</>
+                        ) : lastState === "playing" ? (
                           t.stop
                         ) : (
-                          t.read
+                          <>
+                            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z" fill="currentColor" /></svg>
+                            {lang === "fr" ? "Lire" : "Read"}
+                          </>
                         )}
                       </button>
-                    )}
-                    {item.edited && (
-                      <span style={{ color: "var(--muted)" }} className="italic text-[12px]">
-                        {t.edited}
-                      </span>
                     )}
                   </>
                 )}
               </div>
             </div>
-          );
-        })}
-        {loading && (
-          <div className="anim-msg-in flex justify-start">
-            <div
-              className="rounded-2xl px-4 py-3"
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--edge)",
-              }}
-            >
-              <span className="dot" />
-              <span className="dot" />
-              <span className="dot" />
-            </div>
-          </div>
-        )}
-        {error && (
-          <div className="px-1 text-[13px]" style={{ color: "var(--muted)" }}>
-            {error}
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* Composer */}
-      <form
-        onSubmit={onSubmit}
-        className="mt-4 flex items-end gap-2 rounded-2xl border p-2"
-        style={{
-          background: "rgba(20, 35, 59, 0.6)",
-          borderColor: "var(--edge)",
-          backdropFilter: "blur(4px)",
-        }}
-      >
-        <textarea
-          value={keywords}
-          onChange={(e) => setKeywords(e.target.value)}
-          onKeyDown={onKeyDown}
-          rows={1}
-          placeholder={t.placeholder}
-          className="flex-1 resize-none bg-transparent px-3 py-2 text-[15px] leading-relaxed placeholder:opacity-60"
-          style={{ color: "var(--cream)", maxHeight: 200 }}
-        />
-        <button
-          type="submit"
-          disabled={loading || !keywords.trim()}
-          className="font-display rounded-full px-5 py-2 text-[14px] transition-opacity disabled:opacity-40"
-          style={{
-            background: "var(--gold)",
-            color: "var(--bg)",
-            fontWeight: 400,
-          }}
-        >
-          {loading ? t.generating : t.generate}
-        </button>
-      </form>
+          {loading && (
+            <div className="anim-msg-in mt-6 inline-block rounded-full border-2 bg-white px-5 py-3">
+              <span className="dot" /><span className="dot" /><span className="dot" />
+            </div>
+          )}
+          {error && <p className="mt-4 text-[15px]" style={{ color: "var(--muted)" }}>{error}</p>}
+
+          {history.length > 0 && (
+            <ul className="mt-10 space-y-2">
+              {history.map((item) => (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    onClick={() => void playTTS(item)}
+                    className="w-full rounded-2xl border-2 bg-white px-4 py-3 text-left text-[17px]"
+                    aria-label={`${lang === "fr" ? "Lire" : "Read"} : ${item.sentence}`}
+                  >
+                    {(ttsState[item.id] ?? "idle") === "playing" ? "■ " : "▸ "}
+                    {item.sentence}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <form onSubmit={onSubmit} className="composer mt-8">
+          <textarea
+            aria-label={t.placeholder}
+            value={keywords}
+            onChange={(e) => setKeywords(e.target.value)}
+            onKeyDown={onKeyDown}
+            rows={1}
+            placeholder={t.placeholder}
+            className="flex-1 resize-none bg-transparent px-4 py-2 text-[19px] placeholder:opacity-60"
+            style={{ color: "var(--ink)", maxHeight: 200 }}
+          />
+          <button type="submit" disabled={loading || !keywords.trim()} className="btn btn-say text-[18px]">
+            {loading ? t.generating : t.generate}
+          </button>
+        </form>
+      </main>
 
       {fullscreen && (
         <FullscreenReader
@@ -537,76 +437,6 @@ function DirePage() {
           labelClose={t.close}
         />
       )}
-    </div>
-  );
-}
-
-function PillGroup({
-  options,
-  value,
-  onChange,
-}: {
-  options: { value: string; label: string }[];
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div
-      className="inline-flex rounded-full border p-1"
-      style={{ borderColor: "var(--edge)", background: "rgba(20,35,59,0.4)" }}
-    >
-      {options.map((o) => {
-        const active = o.value === value;
-        return (
-          <button
-            key={o.value}
-            type="button"
-            onClick={() => onChange(o.value)}
-            className="rounded-full px-4 py-1.5 text-[12.5px] transition-colors"
-            style={{
-              background: active ? "var(--gold)" : "transparent",
-              color: active ? "var(--bg)" : "var(--cream-soft)",
-              fontWeight: active ? 500 : 400,
-            }}
-          >
-            {o.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-export function TabNav({ active }: { active?: "ask" | "dire" }) {
-  return (
-    <div className="mt-8 flex justify-center">
-      <div
-        className="inline-flex rounded-full border p-1"
-        style={{ borderColor: "var(--edge)", background: "rgba(20,35,59,0.4)" }}
-      >
-        <Link
-          to="/ask"
-          className="rounded-full px-4 py-1.5 text-[12.5px] transition-colors"
-          style={{
-            background: active === "ask" ? "var(--gold)" : "transparent",
-            color: active === "ask" ? "var(--bg)" : "var(--cream-soft)",
-            fontWeight: active === "ask" ? 500 : 400,
-          }}
-        >
-          Demandez-moi
-        </Link>
-        <Link
-          to="/dire"
-          className="rounded-full px-4 py-1.5 text-[12.5px] transition-colors"
-          style={{
-            background: active === "dire" ? "var(--gold)" : "transparent",
-            color: active === "dire" ? "var(--bg)" : "var(--cream-soft)",
-            fontWeight: active === "dire" ? 500 : 400,
-          }}
-        >
-          Je veux te dire
-        </Link>
-      </div>
     </div>
   );
 }
