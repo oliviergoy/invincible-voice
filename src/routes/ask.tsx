@@ -502,8 +502,8 @@ function MessageBubble({
             <button type="button" onClick={onFullscreen} className="btn btn-secondary" title="Plein écran, dans le sens de lecture">
               {t.fullscreenLabel}
             </button>
-            <button type="button" onClick={onFullscreenRotated} className="btn btn-secondary" title="Plein écran retourné, pour la personne en face">
-              {t.fullscreenRotatedLabel}
+            <button type="button" onClick={onFullscreenRotated} className="btn btn-secondary" title="Plein écran retourné, pour la personne en face" aria-label={t.fullscreenRotatedLabel}>
+              <span className="inline-block rotate-180">{t.fullscreenLabel}</span>
             </button>
             <button type="button" onClick={onStartEdit} className="btn btn-secondary">{t.edit}</button>
             {voice && (

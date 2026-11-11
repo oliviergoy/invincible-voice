@@ -352,8 +352,9 @@ function DirePage() {
                       className="btn btn-secondary"
                       onClick={() => setFullscreen({ text: last.sentence, rotated: true })}
                       title="Plein écran retourné, pour la personne en face"
+                      aria-label="Plein écran retourné, pour la personne en face"
                     >
-                      {lang === "fr" ? "Plein écran retourné" : "Full screen, upside down"}
+                      <span className="inline-block rotate-180">{lang === "fr" ? "Plein écran" : "Full screen"}</span>
                     </button>
                     <button type="button" className="btn btn-secondary" onClick={() => startEdit(last)}>{t.edit}</button>
                     {voice && (
