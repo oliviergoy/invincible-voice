@@ -339,26 +339,21 @@ function DirePage() {
                 ) : (
                   <>
                     {last.edited && <span className="text-[14px]" style={{ color: "var(--muted)" }}>{t.edited}</span>}
-                    {mode === "improve" && (
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        disabled={loading}
-                        onClick={() => {
-                          setKeywords(last.keywords);
-                          setTimeout(() => void expandWith(last.keywords), 0);
-                        }}
-                      >
-                        {lang === "fr" ? "Autre phrase" : "Another sentence"}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setFullscreen({ text: last.sentence, rotated: false })}
+                      title="Plein écran, dans le sens de lecture"
+                    >
+                      {lang === "fr" ? "Plein écran" : "Full screen"}
+                    </button>
                     <button
                       type="button"
                       className="btn btn-secondary"
                       onClick={() => setFullscreen({ text: last.sentence, rotated: true })}
                       title="Plein écran retourné, pour la personne en face"
                     >
-                      {lang === "fr" ? "Plein écran" : "Full screen"}
+                      {lang === "fr" ? "Plein écran retourné" : "Full screen, upside down"}
                     </button>
                     <button type="button" className="btn btn-secondary" onClick={() => startEdit(last)}>{t.edit}</button>
                     {voice && (

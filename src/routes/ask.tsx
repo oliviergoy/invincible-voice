@@ -40,6 +40,7 @@ const LABELS = {
     edit: "Éditer",
     read: "Lire",
     fullscreenLabel: "Plein écran",
+    fullscreenRotatedLabel: "Plein écran retourné",
     stop: "■ Stop",
     fullscreen: "⛶↻",
     fullscreenPlain: "⛶",
@@ -64,6 +65,7 @@ const LABELS = {
     edit: "Edit",
     read: "Read",
     fullscreenLabel: "Full screen",
+    fullscreenRotatedLabel: "Full screen, upside down",
     stop: "■ Stop",
     fullscreen: "⛶↻",
     fullscreenPlain: "⛶",
@@ -352,7 +354,8 @@ function Index() {
               onSaveEdit={() => saveEdit(m.id)}
               ttsState={ttsState[m.id] ?? "idle"}
               onPlay={() => void playTTS(m)}
-              onFullscreen={() => setFullscreen({ text: m.content, rotated: true })}
+              onFullscreen={() => setFullscreen({ text: m.content, rotated: false })}
+              onFullscreenRotated={() => setFullscreen({ text: m.content, rotated: true })}
             />
           ))}
           {loading && (
@@ -442,6 +445,7 @@ function MessageBubble({
   ttsState,
   onPlay,
   onFullscreen,
+  onFullscreenRotated,
 }: {
   msg: Message;
   t: typeof LABELS["fr"];
@@ -455,6 +459,7 @@ function MessageBubble({
   ttsState: "idle" | "loading" | "playing";
   onPlay: () => void;
   onFullscreen: () => void;
+  onFullscreenRotated: () => void;
 }) {
   const isUser = msg.role === "user";
   if (isUser) {
@@ -494,8 +499,11 @@ function MessageBubble({
         ) : (
           <>
             {msg.edited && <span className="text-[14px]" style={{ color: "var(--muted)" }}>{t.edited}</span>}
-            <button type="button" onClick={onFullscreen} className="btn btn-secondary" title="Plein écran retourné, pour la personne en face">
+            <button type="button" onClick={onFullscreen} className="btn btn-secondary" title="Plein écran, dans le sens de lecture">
               {t.fullscreenLabel}
+            </button>
+            <button type="button" onClick={onFullscreenRotated} className="btn btn-secondary" title="Plein écran retourné, pour la personne en face">
+              {t.fullscreenRotatedLabel}
             </button>
             <button type="button" onClick={onStartEdit} className="btn btn-secondary">{t.edit}</button>
             {voice && (
