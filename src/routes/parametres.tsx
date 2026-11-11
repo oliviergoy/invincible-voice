@@ -15,7 +15,26 @@ export const Route = createFileRoute("/parametres")({
 });
 
 
+// Safari lacks async iteration on ReadableStream, which pdf.js uses for text extraction
+function polyfillStreamIterator() {
+  const proto = ReadableStream.prototype as unknown as Record<symbol, unknown>;
+  if (proto[Symbol.asyncIterator]) return;
+  proto[Symbol.asyncIterator] = async function* (this: ReadableStream) {
+    const reader = this.getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) return;
+        yield value;
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  };
+}
+
 async function extractPdf(file: File): Promise<string> {
+  polyfillStreamIterator();
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   const workerUrl = (await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url"))
     .default;
