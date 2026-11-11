@@ -8,6 +8,7 @@
   --color-ask: var(--ask);
   --color-say: var(--say);
   --color-muted: var(--muted);
+  --color-card: var(--white);
   --font-display: "Jost", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Jost", ui-sans-serif, system-ui, sans-serif;
 }

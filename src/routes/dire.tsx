@@ -387,7 +387,7 @@ function DirePage() {
           )}
 
           {loading && (
-            <div className="anim-msg-in mt-6 inline-block rounded-full border-2 px-5 py-3">
+            <div className="anim-msg-in mt-6 inline-block rounded-full border-2 bg-card px-5 py-3">
               <span className="dot" /><span className="dot" /><span className="dot" />
             </div>
           )}
@@ -400,7 +400,7 @@ function DirePage() {
                   <button
                     type="button"
                     onClick={() => void playTTS(item)}
-                    className="w-full rounded-2xl border-2 px-4 py-3 text-left text-[17px]"
+                    className="w-full rounded-2xl border-2 bg-card px-4 py-3 text-left text-[17px]"
                     aria-label={`${lang === "fr" ? "Lire" : "Read"} : ${item.sentence}`}
                   >
                     {(ttsState[item.id] ?? "idle") === "playing" ? "■ " : "▸ "}
