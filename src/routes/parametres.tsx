@@ -98,7 +98,7 @@ function ParametresPage() {
         console.error("extract failed", err);
         setError(
           `Impossible de lire ${file.name}. Formats supportés : PDF, Word (.docx), texte (.txt).` +
-            (err instanceof Error && err.message ? ` (${err.message})` : ""),
+            ((err as { message?: string })?.message ? ` (${(err as { message?: string }).message})` : ""),
         );
       }
     }
