@@ -140,9 +140,9 @@ function GuidePage() {
           alt="Capture du mode Demandez-moi avec une question, une réponse bleue et les boutons d'action."
           accent="var(--ask)"
           markers={[
-            { number: 1, x: "83%", y: "20%" },
-            { number: 2, x: "50%", y: "92%" },
-            { number: 3, x: "82%", y: "55%" },
+            { number: 1, x: "91%", y: "20%" },
+            { number: 2, x: "50%", y: "89%" },
+            { number: 3, x: "92%", y: "55%" },
           ]}
           tips={[
             "Choisissez le français ou l'anglais, puis une réponse brève ou longue.",
@@ -159,9 +159,9 @@ function GuidePage() {
           alt="Capture du mode Je veux te dire avec une phrase orange et les boutons Plein écran, Éditer et Lire."
           accent="var(--say)"
           markers={[
-            { number: 1, x: "83%", y: "20%" },
-            { number: 2, x: "50%", y: "92%" },
-            { number: 3, x: "83%", y: "52%" },
+            { number: 1, x: "92%", y: "20%" },
+            { number: 2, x: "50%", y: "89%" },
+            { number: 3, x: "94%", y: "52%" },
           ]}
           tips={[
             "Tel quel conserve exactement vos mots. Améliorer formule une phrase à partir de mots-clés.",
@@ -178,7 +178,7 @@ function GuidePage() {
           alt="Capture du plein écran retourné avec le texte à l'envers et les commandes de taille en haut."
           accent="var(--ink)"
           markers={[
-            { number: 1, x: "89%", y: "5%" },
+            { number: 1, x: "76%", y: "5%" },
             { number: 2, x: "50%", y: "52%" },
           ]}
           tips={[
