@@ -46,7 +46,7 @@ export async function getUserContext(
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-/** Calls the user's own Claude or ChatGPT key. */
+/** Calls the user's own Claude, ChatGPT or Mistral key. */
 export async function callUserAI(
   settings: UserSettings | null,
   system: string,
@@ -55,6 +55,24 @@ export async function callUserAI(
 ): Promise<{ text: string } | { error: string; status: number }> {
   const aiKey = settings?.ai_key?.trim();
   if (!aiKey) return { error: "no_ai_key", status: 400 };
+
+  if (settings?.ai_provider === "mistral") {
+    const r = await fetch("https://api.mistral.ai/v1/chat/completions", {
+      method: "POST",
+      headers: { authorization: `Bearer ${aiKey}`, "content-type": "application/json" },
+      body: JSON.stringify({
+        model: "mistral-large-latest",
+        max_tokens: maxTokens,
+        messages: [{ role: "system", content: system }, ...messages],
+      }),
+    });
+    if (!r.ok) {
+      console.error("Mistral error", r.status, await r.text());
+      return { error: "ai_error", status: 502 };
+    }
+    const d = (await r.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    return { text: (d.choices?.[0]?.message?.content ?? "").trim() };
+  }
 
   if (settings?.ai_provider === "openai") {
     const r = await fetch("https://api.openai.com/v1/chat/completions", {
