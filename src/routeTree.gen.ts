@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskRouteImport } from './routes/ask'
 import { Route as DireRouteImport } from './routes/dire'
+import { Route as GuideRouteImport } from './routes/guide'
 import { Route as ParametresRouteImport } from './routes/parametres'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiExpandRouteImport } from './routes/api/expand'
@@ -32,6 +33,11 @@ const AskRoute = AskRouteImport.update({
 const DireRoute = DireRouteImport.update({
   id: '/dire',
   path: '/dire',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuideRoute = GuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParametresRoute = ParametresRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
   '/dire': typeof DireRoute
+  '/guide': typeof GuideRoute
   '/parametres': typeof ParametresRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
   '/dire': typeof DireRoute
+  '/guide': typeof GuideRoute
   '/parametres': typeof ParametresRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ask': typeof AskRoute
   '/dire': typeof DireRoute
+  '/guide': typeof GuideRoute
   '/parametres': typeof ParametresRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ask'
     | '/dire'
+    | '/guide'
     | '/parametres'
     | '/api/chat'
     | '/api/expand'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ask'
     | '/dire'
+    | '/guide'
     | '/parametres'
     | '/api/chat'
     | '/api/expand'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ask'
     | '/dire'
+    | '/guide'
     | '/parametres'
     | '/api/chat'
     | '/api/expand'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AskRoute: typeof AskRoute
   DireRoute: typeof DireRoute
+  GuideRoute: typeof GuideRoute
   ParametresRoute: typeof ParametresRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiExpandRoute: typeof ApiExpandRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/dire'
       fullPath: '/dire'
       preLoaderRoute: typeof DireRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide': {
+      id: '/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof GuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/parametres': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AskRoute: AskRoute,
   DireRoute: DireRoute,
+  GuideRoute: GuideRoute,
   ParametresRoute: ParametresRoute,
   ApiChatRoute: ApiChatRoute,
   ApiExpandRoute: ApiExpandRoute,

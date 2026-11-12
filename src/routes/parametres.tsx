@@ -16,7 +16,11 @@ export const Route = createFileRoute("/parametres")({
   head: () => ({
     meta: [
       { title: "Invincible Voice — Paramètres" },
+      { name: "description", content: "Personnalisez votre présentation, votre IA, votre voix et vos documents dans Invincible Voice." },
       { property: "og:title", content: "Invincible Voice — Paramètres" },
+      { property: "og:description", content: "Gérez vos réglages personnels, votre voix et vos documents." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });
@@ -150,6 +154,7 @@ function ParametresPage() {
           <span className="font-display text-[24px]">Invincible Voice</span>
         </Link>
         <nav className="flex flex-wrap gap-2" aria-label="Retour">
+          <Link to="/guide" className="btn btn-secondary">Guide</Link>
           <Link to="/ask" className="btn btn-ask">Demandez-moi</Link>
           <Link to="/dire" className="btn btn-say">Je veux te dire</Link>
         </nav>

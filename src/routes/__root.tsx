@@ -94,8 +94,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "\"Invincible Voice\" is a French chat interface for conversing with an AI persona of Olivier Goy." },
       { property: "og:description", content: "\"Invincible Voice\" is a French chat interface for conversing with an AI persona of Olivier Goy." },
       { name: "twitter:description", content: "\"Invincible Voice\" is a French chat interface for conversing with an AI persona of Olivier Goy." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fb6a27b5-5a9e-4448-a84e-0a79c41cdcba/id-preview-b06f875e--ed775631-6e03-4382-b703-bdeabca1b877.lovable.app-1778956921895.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fb6a27b5-5a9e-4448-a84e-0a79c41cdcba/id-preview-b06f875e--ed775631-6e03-4382-b703-bdeabca1b877.lovable.app-1778956921895.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

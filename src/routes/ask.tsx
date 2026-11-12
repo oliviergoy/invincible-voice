@@ -11,7 +11,11 @@ export const Route = createFileRoute("/ask")({
   head: () => ({
     meta: [
       { title: "Invincible Voice — Demandez-moi" },
+      { name: "description", content: "Posez une question à Invincible Voice, modifiez la réponse et écoutez-la avec votre voix." },
       { property: "og:title", content: "Invincible Voice — Demandez-moi" },
+      { property: "og:description", content: "Posez une question, recevez une réponse personnalisée et écoutez-la avec votre voix." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

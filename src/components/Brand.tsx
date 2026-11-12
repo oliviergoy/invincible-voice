@@ -54,6 +54,7 @@ export function AppHeader({
             {unavailableLabel}
           </span>
         ) : null}
+        <Link to="/guide" className="btn btn-secondary">Guide</Link>
         <Link to="/parametres" className="btn btn-secondary">Paramètres</Link>
       </div>
     </header>
