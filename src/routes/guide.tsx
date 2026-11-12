@@ -12,7 +12,7 @@ export const Route = createFileRoute("/guide")({
       {
         name: "description",
         content:
-          "Apprenez à poser une question, préparer une phrase, utiliser votre voix et afficher un texte en plein écran avec Invincible Voice.",
+          "Apprenez à connecter Claude, ChatGPT ou Mistral, poser une question, préparer une phrase, utiliser votre voix et afficher un texte en plein écran avec Invincible Voice.",
       },
       { property: "og:title", content: "Invincible Voice — Guide d'utilisation" },
       {
@@ -273,19 +273,59 @@ function GuidePage() {
           ]}
         />
 
+        <section className="mt-16 rounded-[28px] border-[3px] p-6 sm:p-8" aria-labelledby="guide-ai">
+          <div className="flex items-start gap-4">
+            <span className="font-display pt-1 text-[28px] leading-none" style={{ color: "var(--ask)" }}>04</span>
+            <div>
+              <h2 id="guide-ai" className="font-display text-[30px] leading-tight sm:text-[40px]">
+                Connectez votre intelligence artificielle
+              </h2>
+              <p className="mt-3 max-w-[760px] text-[18px] leading-relaxed" style={{ color: "var(--muted)" }}>
+                Pour générer les réponses et les phrases, choisissez un service et utilisez votre propre clé API.
+                Chaque compte conserve ses réglages et paie sa propre utilisation selon les tarifs du service choisi.
+              </p>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {[
+              ["Claude (Anthropic)", "Créez votre clé sur console.anthropic.com, rubrique API Keys."],
+              ["ChatGPT (OpenAI)", "Créez votre clé sur platform.openai.com, rubrique API keys."],
+              ["Le Chat (Mistral)", "Créez votre clé sur console.mistral.ai, rubrique API Keys."],
+            ].map(([title, text]) => (
+              <div key={title} className="rounded-2xl p-5" style={{ background: "var(--white)" }}>
+                <h3 className="font-display text-[21px]">{title}</h3>
+                <p className="mt-2 text-[16px] leading-relaxed" style={{ color: "var(--muted)" }}>{text}</p>
+              </div>
+            ))}
+          </div>
+          <ol className="mt-6 grid gap-4 md:grid-cols-3">
+            {[
+              "Ouvrez Paramètres, puis la partie 02 Mon IA.",
+              "Choisissez votre service et collez votre clé dans Ma clé.",
+              "Cliquez sur Enregistrer : vous pouvez ensuite utiliser Demandez-moi et Je veux te dire.",
+            ].map((tip, index) => (
+              <li key={tip} className="flex items-start gap-3 text-[17px] leading-relaxed">
+                <NumberBadge number={index + 1} small />
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ol>
+          <Link to="/parametres" className="btn btn-primary mt-6">Connecter mon IA</Link>
+        </section>
+
         <section className="mt-16 rounded-[28px] border-[3px] p-6 sm:p-8" aria-labelledby="guide-settings">
-          <p className="font-display text-[28px]" style={{ color: "var(--say)" }}>04</p>
+          <p className="font-display text-[28px]" style={{ color: "var(--say)" }}>05</p>
           <h2 id="guide-settings" className="font-display mt-2 text-[30px] sm:text-[40px]">
             Personnalisez votre espace
           </h2>
           <p className="mt-3 max-w-[760px] text-[18px] leading-relaxed" style={{ color: "var(--muted)" }}>
             Votre compte Google retrouve vos réglages personnels. Dans Paramètres, ajoutez votre présentation,
-            votre service d'IA, votre voix et vos documents, puis cliquez sur Enregistrer.
+            votre voix et vos documents, puis cliquez sur Enregistrer.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {[
               ["Votre présentation", "Indiquez qui vous êtes pour obtenir des réponses à la première personne."],
-              ["Votre IA et votre voix", "Renseignez vos propres clés et choisissez la voix utilisée par le bouton Lire."],
+              ["Votre voix", "Renseignez votre clé ElevenLabs et l'identifiant de la voix utilisée par le bouton Lire."],
               ["Vos documents", "Ajoutez des fichiers PDF, Word ou texte pour enrichir les réponses."],
             ].map(([title, text]) => (
               <div key={title} className="rounded-2xl p-5" style={{ background: "var(--white)" }}>
