@@ -150,6 +150,7 @@ function ParametresPage() {
           <span className="font-display text-[24px]">Invincible Voice</span>
         </Link>
         <nav className="flex flex-wrap gap-2" aria-label="Retour">
+          <Link to="/guide" className="btn btn-secondary">Guide</Link>
           <Link to="/ask" className="btn btn-ask">Demandez-moi</Link>
           <Link to="/dire" className="btn btn-say">Je veux te dire</Link>
         </nav>
