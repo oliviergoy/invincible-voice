@@ -10,7 +10,11 @@ export const Route = createFileRoute("/dire")({
   head: () => ({
     meta: [
       { title: "Invincible Voice — Je veux te dire" },
+      { name: "description", content: "Préparez une phrase, modifiez-la, affichez-la en plein écran ou lisez-la avec votre voix." },
       { property: "og:title", content: "Invincible Voice — Je veux te dire" },
+      { property: "og:description", content: "Exprimez un besoin avec une phrase personnalisée, votre voix et un affichage plein écran." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });

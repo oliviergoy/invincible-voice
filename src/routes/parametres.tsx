@@ -16,7 +16,11 @@ export const Route = createFileRoute("/parametres")({
   head: () => ({
     meta: [
       { title: "Invincible Voice — Paramètres" },
+      { name: "description", content: "Personnalisez votre présentation, votre IA, votre voix et vos documents dans Invincible Voice." },
       { property: "og:title", content: "Invincible Voice — Paramètres" },
+      { property: "og:description", content: "Gérez vos réglages personnels, votre voix et vos documents." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });
