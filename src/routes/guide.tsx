@@ -185,6 +185,8 @@ function GuidePage() {
           </a>
         </div>
 
+        <DeviceBand />
+
         <div className="mt-8 flex flex-wrap gap-3">
           <Link to="/ask" className="btn btn-ask">Essayer Demandez-moi</Link>
           <Link to="/dire" className="btn btn-say">Essayer Je veux te dire</Link>
