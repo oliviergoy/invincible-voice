@@ -9,3 +9,5 @@
 - [x] Bouton « Autre phrase » retiré ; deux boutons distincts : « Plein écran » (sens normal) et « Plein écran retourné » (180°)
 - [x] Ajouter une page de guide avec captures d'écran pédagogiques des fonctions principales
 - [x] Créer la version PDF téléchargeable du guide illustré
+- [x] Guide + PDF : souligner au début que ça fonctionne sur téléphone, tablette et ordinateur
+- [x] Guide + PDF : souligner la possibilité de dicter une question au micro
