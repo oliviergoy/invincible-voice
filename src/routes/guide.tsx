@@ -12,7 +12,7 @@ export const Route = createFileRoute("/guide")({
       {
         name: "description",
         content:
-          "Apprenez à poser une question, préparer une phrase, utiliser votre voix et afficher un texte en plein écran avec Invincible Voice.",
+          "Apprenez à connecter Claude, ChatGPT ou Mistral, poser une question, préparer une phrase, utiliser votre voix et afficher un texte en plein écran avec Invincible Voice.",
       },
       { property: "og:title", content: "Invincible Voice — Guide d'utilisation" },
       {
