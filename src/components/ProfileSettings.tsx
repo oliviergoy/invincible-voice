@@ -116,11 +116,14 @@ export function ProfileSettings() {
             onChange={(e) => set("ai_provider", e.target.value)}>
             <option value="anthropic">Claude (Anthropic)</option>
             <option value="openai">ChatGPT (OpenAI)</option>
+            <option value="mistral">Le Chat (Mistral)</option>
           </select>
         </Field>
         <Field label="Ma clé"
           hint={form.ai_provider === "openai"
             ? "À créer sur platform.openai.com, rubrique API keys (commence par sk-)."
+            : form.ai_provider === "mistral"
+            ? "À créer sur console.mistral.ai, rubrique API Keys."
             : "À créer sur console.anthropic.com, rubrique API Keys (commence par sk-ant-)."}>
           <input type="password" autoComplete="off" className={inputClass} value={aiKey}
             placeholder={hasAiKey ? "•••••••• enregistrée, tapez pour remplacer" : "Collez votre clé"}
