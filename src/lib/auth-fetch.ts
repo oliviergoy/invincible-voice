@@ -9,6 +9,6 @@ export async function authFetch(input: string, init: RequestInit = {}) {
 }
 
 export const ERROR_HINTS: Record<string, string> = {
-  no_ai_key: "Ajoutez votre clé Claude ou ChatGPT dans les Paramètres (⚙).",
+  no_ai_key: "Ajoutez votre clé Claude, ChatGPT ou Mistral dans les Paramètres (⚙).",
   no_voice: "Ajoutez votre clé et votre voix ElevenLabs dans les Paramètres (⚙).",
 };
