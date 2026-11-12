@@ -8,3 +8,4 @@
 - [x] Refonte visuelle « Paris versus New York » (palette, Jost, logo, en-tête, 3 pages, connexion)
 - [x] Bouton « Autre phrase » retiré ; deux boutons distincts : « Plein écran » (sens normal) et « Plein écran retourné » (180°)
 - [ ] Ajouter une page de guide avec captures d'écran pédagogiques des fonctions principales
+- [ ] Créer la version PDF téléchargeable du guide illustré
