@@ -7,3 +7,4 @@
 - [x] Exemples raccourcis : « Comment vas-tu ? » / « Présentes toi stp ? » sur Demande-moi ; « je boire » / « je dormir » sur Je veux te dire
 - [x] Refonte visuelle « Paris versus New York » (palette, Jost, logo, en-tête, 3 pages, connexion)
 - [x] Bouton « Autre phrase » retiré ; deux boutons distincts : « Plein écran » (sens normal) et « Plein écran retourné » (180°)
+- [ ] Ajouter une page de guide avec captures d'écran pédagogiques des fonctions principales
