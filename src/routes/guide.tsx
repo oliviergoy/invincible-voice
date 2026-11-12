@@ -221,7 +221,7 @@ function GuidePage() {
           number="01"
           title="Demandez-moi : posez votre question"
           description="Écrivez ou dictez une question. Invincible Voice répond à la première personne, en utilisant la présentation et les documents enregistrés dans vos paramètres."
-          notice="Touchez le micro et parlez : Invincible Voice écoute votre question et l'écrit pour vous."
+          notice="Touchez le micro : Invincible Voice écoute votre interlocuteur"
           image={askScreenshot}
           alt="Capture du mode Demandez-moi avec une question, une réponse bleue et les boutons d'action."
           accent="var(--ask)"
