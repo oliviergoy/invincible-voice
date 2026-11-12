@@ -99,6 +99,27 @@ function NumberBadge({ number, small = false }: { number: number; small?: boolea
   );
 }
 
+function MicIcon() {
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="2.5" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3.5" />
+    </svg>
+  );
+}
+
+function MicNotice({ text }: { text: string }) {
+  return (
+    <div
+      className="mt-6 flex items-center gap-4 rounded-[24px] border-[3px] px-5 py-4 sm:px-6"
+      style={{ background: "var(--ask)", borderColor: "var(--ask)", color: "var(--white)" }}
+    >
+      <span className="shrink-0"><MicIcon /></span>
+      <p className="font-display text-[19px] leading-snug sm:text-[22px]">{text}</p>
+    </div>
+  );
+}
+
 function IllustratedStep({
   number,
   title,
@@ -108,6 +129,7 @@ function IllustratedStep({
   markers,
   tips,
   accent,
+  notice,
 }: {
   number: string;
   title: string;
@@ -117,6 +139,7 @@ function IllustratedStep({
   markers: Marker[];
   tips: string[];
   accent: string;
+  notice?: string;
 }) {
   return (
     <section className="mt-16" aria-labelledby={`guide-step-${number}`}>
@@ -133,6 +156,8 @@ function IllustratedStep({
           </p>
         </div>
       </div>
+
+      {notice ? <MicNotice text={notice} /> : null}
 
       <figure className="mt-7">
         <div className="relative overflow-hidden rounded-[24px] border-[3px]" style={{ background: "var(--white)" }}>
@@ -196,6 +221,7 @@ function GuidePage() {
           number="01"
           title="Demandez-moi : posez votre question"
           description="Écrivez ou dictez une question. Invincible Voice répond à la première personne, en utilisant la présentation et les documents enregistrés dans vos paramètres."
+          notice="Touchez le micro et parlez : Invincible Voice écoute votre question et l'écrit pour vous."
           image={askScreenshot}
           alt="Capture du mode Demandez-moi avec une question, une réponse bleue et les boutons d'action."
           accent="var(--ask)"
