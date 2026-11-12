@@ -27,6 +27,64 @@ export const Route = createFileRoute("/guide")({
 
 type Marker = { number: number; x: string; y: string };
 
+function PhoneIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true">
+      <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+      <path d="M10.5 18.5h3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function TabletIcon() {
+  return (
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true">
+      <rect x="4" y="2.5" width="16" height="19" rx="2.5" />
+      <path d="M10.5 18.5h3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ComputerIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" aria-hidden="true">
+      <rect x="2.5" y="4" width="19" height="13" rx="2" />
+      <path d="M7 20.5h10" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function DeviceBand() {
+  const items = [
+    { icon: <PhoneIcon />, label: "Téléphone" },
+    { icon: <TabletIcon />, label: "Tablette" },
+    { icon: <ComputerIcon />, label: "Ordinateur" },
+  ];
+  return (
+    <section
+      className="mt-8 rounded-[24px] border-[3px] px-5 py-5 sm:px-7"
+      style={{ background: "var(--ink)", borderColor: "var(--ink)" }}
+      aria-label="Fonctionne sur téléphone, tablette et ordinateur"
+    >
+      <p className="font-display text-center text-[22px] leading-snug sm:text-[28px]" style={{ color: "var(--paper)" }}>
+        Fonctionne sur téléphone, tablette et ordinateur
+      </p>
+      <ul className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+        {items.map((item) => (
+          <li
+            key={item.label}
+            className="font-display inline-flex min-h-[46px] items-center gap-2.5 rounded-full px-5 text-[16px] sm:text-[18px]"
+            style={{ background: "var(--paper)", color: "var(--ink)" }}
+          >
+            {item.icon}
+            {item.label}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function NumberBadge({ number, small = false }: { number: number; small?: boolean }) {
   return (
     <span
