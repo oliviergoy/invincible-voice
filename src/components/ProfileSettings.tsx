@@ -1,13 +1,45 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { authFetch } from "@/lib/auth-fetch";
 
 type Form = {
   display_name: string;
   bio: string;
+  voice_provider: string;
   voice_id: string;
+  gradium_voice_id: string;
   ai_provider: string;
   reader_rotated: boolean;
 };
+
+type LibraryVoice = {
+  id: string;
+  name: string;
+  description: string | null;
+  language: string | null;
+  own: boolean;
+};
+
+const LANGUAGES: Array<[string, string]> = [
+  ["fr", "Français"],
+  ["en", "English"],
+  ["de", "Deutsch"],
+  ["es", "Español"],
+  ["pt", "Português"],
+];
+
+function groupVoices(voices: LibraryVoice[]): Array<[string, LibraryVoice[]]> {
+  const known = new Set(LANGUAGES.map(([code]) => code));
+  const groups: Array<[string, LibraryVoice[]]> = [
+    ["Mes voix", voices.filter((v) => v.own)],
+    ...LANGUAGES.map(([code, label]): [string, LibraryVoice[]] => [
+      label,
+      voices.filter((v) => !v.own && v.language === code),
+    ]),
+    ["Autres", voices.filter((v) => !v.own && !known.has(v.language ?? ""))],
+  ];
+  return groups.filter(([, list]) => list.length > 0);
+}
 
 const inputClass = "field mt-2";
 
@@ -38,14 +70,20 @@ export function ProfileSettings() {
   const [form, setForm] = useState<Form>({
     display_name: "",
     bio: "",
+    voice_provider: "elevenlabs",
     voice_id: "",
+    gradium_voice_id: "",
     ai_provider: "anthropic",
     reader_rotated: true,
   });
   const [hasAiKey, setHasAiKey] = useState(false);
   const [hasElKey, setHasElKey] = useState(false);
+  const [hasGradiumKey, setHasGradiumKey] = useState(false);
   const [aiKey, setAiKey] = useState("");
   const [elKey, setElKey] = useState("");
+  const [gradiumKey, setGradiumKey] = useState("");
+  const [library, setLibrary] = useState<LibraryVoice[] | "loading" | "error" | null>(null);
+  const [libraryVersion, setLibraryVersion] = useState(0);
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,17 +96,38 @@ export function ProfileSettings() {
         setForm({
           display_name: s.display_name,
           bio: s.bio,
+          voice_provider: s.voice_provider,
           voice_id: s.voice_id,
+          gradium_voice_id: s.gradium_voice_id,
           ai_provider: s.ai_provider,
           reader_rotated: s.reader_rotated,
         });
         setHasAiKey(!!s.ai_key);
         setHasElKey(!!s.elevenlabs_key);
+        setHasGradiumKey(!!s.gradium_key);
       } else {
         setForm((f) => ({ ...f, display_name: data.user!.user_metadata?.full_name ?? "" }));
       }
     })();
   }, []);
+
+  const showLibrary = form.voice_provider === "gradium" && hasGradiumKey;
+  useEffect(() => {
+    if (!showLibrary) return;
+    let cancelled = false;
+    setLibrary("loading");
+    authFetch("/api/gradium-voices")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data: { voices: LibraryVoice[] }) => {
+        if (!cancelled) setLibrary(data.voices);
+      })
+      .catch(() => {
+        if (!cancelled) setLibrary("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showLibrary, libraryVersion]);
 
   const save = async () => {
     if (!userId) return;
@@ -76,6 +135,7 @@ export function ProfileSettings() {
     const row: Record<string, unknown> = { user_id: userId, ...form, updated_at: new Date().toISOString() };
     if (aiKey.trim()) row.ai_key = aiKey.trim();
     if (elKey.trim()) row.elevenlabs_key = elKey.trim();
+    if (gradiumKey.trim()) row.gradium_key = gradiumKey.trim();
     const { error } = await supabase
       .from("user_settings")
       .upsert(row as never, { onConflict: "user_id" });
@@ -85,12 +145,20 @@ export function ProfileSettings() {
     }
     if (aiKey.trim()) setHasAiKey(true);
     if (elKey.trim()) setHasElKey(true);
+    if (gradiumKey.trim()) {
+      setHasGradiumKey(true);
+      setLibraryVersion((n) => n + 1);
+    }
     setAiKey("");
     setElKey("");
+    setGradiumKey("");
     setStatus("Enregistré ✓");
   };
 
-  const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
+  const set = <K extends keyof Form>(k: K, v: Form[K]) => {
+    setStatus(null);
+    setForm((f) => ({ ...f, [k]: v }));
+  };
 
   return (
     <div className="mt-6">
@@ -132,15 +200,66 @@ export function ProfileSettings() {
       </Section>
 
       <Section num="03" color="var(--say)" title="Ma voix">
-        <Field label="Ma clé ElevenLabs" hint="Sur elevenlabs.io : Profil, puis API Keys.">
-          <input type="password" autoComplete="off" className={inputClass} value={elKey}
-            placeholder={hasElKey ? "•••••••• enregistrée, tapez pour remplacer" : "Collez votre clé"}
-            onChange={(e) => setElKey(e.target.value)} />
+        <Field label="Service">
+          <select
+            className={inputClass}
+            value={form.voice_provider}
+            onChange={(e) => set("voice_provider", e.target.value)}
+          >
+            <option value="elevenlabs">ElevenLabs</option>
+            <option value="gradium">Kyutai (Gradium)</option>
+          </select>
         </Field>
-        <Field label="Identifiant de ma voix" hint="Dans ElevenLabs, rubrique Voices : ouvrez votre voix et copiez son ID.">
-          <input className={inputClass} value={form.voice_id}
-            onChange={(e) => set("voice_id", e.target.value)} />
-        </Field>
+        {form.voice_provider === "gradium" ? (
+          <>
+            <Field
+              label="Ma clé Gradium"
+              hint="À créer dans Gradium Studio, sur studio.gradium.ai."
+            >
+              <input
+                type="password"
+                autoComplete="off"
+                className={inputClass}
+                value={gradiumKey}
+                placeholder={
+                  hasGradiumKey ? "•••••••• enregistrée, tapez pour remplacer" : "Collez votre clé"
+                }
+                onChange={(e) => setGradiumKey(e.target.value)}
+              />
+            </Field>
+            <GradiumVoicePicker
+              hasKey={hasGradiumKey}
+              library={library}
+              value={form.gradium_voice_id}
+              onChange={(id) => set("gradium_voice_id", id)}
+            />
+          </>
+        ) : (
+          <>
+            <Field label="Ma clé ElevenLabs" hint="Sur elevenlabs.io : Profil, puis API Keys.">
+              <input
+                type="password"
+                autoComplete="off"
+                className={inputClass}
+                value={elKey}
+                placeholder={
+                  hasElKey ? "•••••••• enregistrée, tapez pour remplacer" : "Collez votre clé"
+                }
+                onChange={(e) => setElKey(e.target.value)}
+              />
+            </Field>
+            <Field
+              label="Identifiant de ma voix"
+              hint="Dans ElevenLabs, rubrique Voices : ouvrez votre voix et copiez son ID."
+            >
+              <input
+                className={inputClass}
+                value={form.voice_id}
+                onChange={(e) => set("voice_id", e.target.value)}
+              />
+            </Field>
+          </>
+        )}
       </Section>
 
       <div className="flex items-center justify-end gap-4 pt-6">
@@ -150,5 +269,69 @@ export function ProfileSettings() {
         </button>
       </div>
     </div>
+  );
+}
+
+function GradiumVoicePicker({
+  hasKey,
+  library,
+  value,
+  onChange,
+}: {
+  hasKey: boolean;
+  library: LibraryVoice[] | "loading" | "error" | null;
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  const muted = { color: "var(--muted)" };
+  if (!hasKey) {
+    return (
+      <p className="text-[15px]" style={muted}>
+        Enregistrez votre clé pour choisir une voix.
+      </p>
+    );
+  }
+  if (library === null || library === "loading") {
+    return (
+      <p className="text-[15px]" style={muted}>
+        Chargement des voix…
+      </p>
+    );
+  }
+  if (library === "error") {
+    return (
+      <p className="text-[15px]" style={{ color: "var(--say)" }}>
+        Impossible de charger les voix Gradium. Vérifiez votre clé.
+      </p>
+    );
+  }
+  const selected = library.find((v) => v.id === value);
+  return (
+    <Field
+      label="Ma voix"
+      hint={
+        selected?.description ??
+        "Une voix clonée dans Gradium Studio apparaît en tête, sous « Mes voix »."
+      }
+    >
+      <select
+        className={inputClass}
+        value={selected ? value : ""}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="" disabled>
+          Choisir une voix
+        </option>
+        {groupVoices(library).map(([label, voices]) => (
+          <optgroup key={label} label={label}>
+            {voices.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.name}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+    </Field>
   );
 }

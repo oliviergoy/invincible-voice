@@ -16,6 +16,7 @@ import { Route as GuideRouteImport } from './routes/guide'
 import { Route as ParametresRouteImport } from './routes/parametres'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiExpandRouteImport } from './routes/api/expand'
+import { Route as ApiGradiumVoicesRouteImport } from './routes/api/gradium-voices'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiVoicesRouteImport } from './routes/api/voices'
@@ -55,6 +56,11 @@ const ApiExpandRoute = ApiExpandRouteImport.update({
   path: '/api/expand',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGradiumVoicesRoute = ApiGradiumVoicesRouteImport.update({
+  id: '/api/gradium-voices',
+  path: '/api/gradium-voices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/parametres': typeof ParametresRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
+  '/api/gradium-voices': typeof ApiGradiumVoicesRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/voices': typeof ApiVoicesRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/parametres': typeof ParametresRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
+  '/api/gradium-voices': typeof ApiGradiumVoicesRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/voices': typeof ApiVoicesRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/parametres': typeof ParametresRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
+  '/api/gradium-voices': typeof ApiGradiumVoicesRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/voices': typeof ApiVoicesRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/parametres'
     | '/api/chat'
     | '/api/expand'
+    | '/api/gradium-voices'
     | '/api/transcribe'
     | '/api/tts'
     | '/api/voices'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/parametres'
     | '/api/chat'
     | '/api/expand'
+    | '/api/gradium-voices'
     | '/api/transcribe'
     | '/api/tts'
     | '/api/voices'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/parametres'
     | '/api/chat'
     | '/api/expand'
+    | '/api/gradium-voices'
     | '/api/transcribe'
     | '/api/tts'
     | '/api/voices'
@@ -155,6 +167,7 @@ export interface RootRouteChildren {
   ParametresRoute: typeof ParametresRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiExpandRoute: typeof ApiExpandRoute
+  ApiGradiumVoicesRoute: typeof ApiGradiumVoicesRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   ApiTtsRoute: typeof ApiTtsRoute
   ApiVoicesRoute: typeof ApiVoicesRoute
@@ -211,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiExpandRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/gradium-voices': {
+      id: '/api/gradium-voices'
+      path: '/api/gradium-voices'
+      fullPath: '/api/gradium-voices'
+      preLoaderRoute: typeof ApiGradiumVoicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/transcribe': {
       id: '/api/transcribe'
       path: '/api/transcribe'
@@ -243,6 +263,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParametresRoute: ParametresRoute,
   ApiChatRoute: ApiChatRoute,
   ApiExpandRoute: ApiExpandRoute,
+  ApiGradiumVoicesRoute: ApiGradiumVoicesRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   ApiTtsRoute: ApiTtsRoute,
   ApiVoicesRoute: ApiVoicesRoute,

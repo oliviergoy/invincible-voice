@@ -233,7 +233,7 @@ function DirePage() {
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ text: item.sentence, voice_id: voice.id }),
         });
-        if (!res.ok) throw new Error("tts");
+        if (!res.ok) throw new Error(await res.text());
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
@@ -255,9 +255,9 @@ function DirePage() {
           setTtsState((s) => ({ ...s, [item.id]: "idle" }));
         };
         await audio.play();
-      } catch {
+      } catch (err) {
         setTtsState((s) => ({ ...s, [item.id]: "idle" }));
-        setError(t.errorTTS);
+        setError(ERROR_HINTS[(err as Error).message] ?? t.errorTTS);
       }
     },
     [voice, stopAudio, t],
