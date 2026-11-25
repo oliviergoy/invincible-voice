@@ -8,6 +8,13 @@
       "when": 1794309917809,
       "tag": "0000_user_settings_and_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795596422992,
+      "tag": "0001_add_gradium_voice_settings",
+      "breakpoints": true
     }
   ]
 }
