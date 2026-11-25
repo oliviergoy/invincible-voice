@@ -325,7 +325,7 @@ function GuidePage() {
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {[
               ["Votre présentation", "Indiquez qui vous êtes pour obtenir des réponses à la première personne."],
-              ["Votre voix", "Renseignez votre clé ElevenLabs et l'identifiant de la voix utilisée par le bouton Lire."],
+              ["Votre voix", "Choisissez ElevenLabs ou Kyutai (Gradium), puis renseignez votre clé et la voix utilisée par le bouton Lire."],
               ["Vos documents", "Ajoutez des fichiers PDF, Word ou texte pour enrichir les réponses."],
             ].map(([title, text]) => (
               <div key={title} className="rounded-2xl p-5" style={{ background: "var(--white)" }}>

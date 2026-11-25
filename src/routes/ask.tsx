@@ -263,7 +263,7 @@ function Index() {
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ text: msg.content, voice_id: voice.id }),
         });
-        if (!res.ok) throw new Error("tts");
+        if (!res.ok) throw new Error(await res.text());
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
@@ -285,11 +285,15 @@ function Index() {
           setTtsState((s) => ({ ...s, [msg.id]: "idle" }));
         };
         await audio.play();
-      } catch {
+      } catch (err) {
         setTtsState((s) => ({ ...s, [msg.id]: "idle" }));
         setMessages((cur) => [
           ...cur,
-          { id: genId(), role: "assistant", content: t.errorTTS },
+          {
+            id: genId(),
+            role: "assistant",
+            content: ERROR_HINTS[(err as Error).message] ?? t.errorTTS,
+          },
         ]);
       }
     },

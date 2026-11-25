@@ -48,11 +48,14 @@ export type Database = {
           bio: string
           display_name: string
           elevenlabs_key: string
+          gradium_key: string
+          gradium_voice_id: string
           reader_rotated: boolean
           reader_scale: number
           updated_at: string
           user_id: string
           voice_id: string
+          voice_provider: string
         }
         Insert: {
           ai_key?: string
@@ -60,11 +63,14 @@ export type Database = {
           bio?: string
           display_name?: string
           elevenlabs_key?: string
+          gradium_key?: string
+          gradium_voice_id?: string
           reader_rotated?: boolean
           reader_scale?: number
           updated_at?: string
           user_id: string
           voice_id?: string
+          voice_provider?: string
         }
         Update: {
           ai_key?: string
@@ -72,11 +78,14 @@ export type Database = {
           bio?: string
           display_name?: string
           elevenlabs_key?: string
+          gradium_key?: string
+          gradium_voice_id?: string
           reader_rotated?: boolean
           reader_scale?: number
           updated_at?: string
           user_id?: string
           voice_id?: string
+          voice_provider?: string
         }
         Relationships: []
       }
