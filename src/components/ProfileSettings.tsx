@@ -56,13 +56,15 @@ export function Section({ num, color, title, children }: { num: string; color: s
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({ label, hint, children }: { label: string; hint?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <label className="block text-left">
-      <span className="text-[16px] font-medium">{label}</span>
-      {children}
-      {hint && <span className="mt-1.5 block text-[14px]" style={{ color: "var(--muted)" }}>{hint}</span>}
-    </label>
+    <div className="text-left">
+      <label className="block">
+        <span className="text-[16px] font-medium">{label}</span>
+        {children}
+      </label>
+      {hint && <div className="mt-1.5 text-[14px]" style={{ color: "var(--muted)" }}>{hint}</div>}
+    </div>
   );
 }
 
@@ -230,7 +232,21 @@ export function ProfileSettings() {
           <>
             <Field
               label="Ma clé Gradium"
-              hint="À créer dans Gradium Studio, sur studio.gradium.ai."
+              hint={
+                <span className="text-[19px] leading-snug">
+                  À créer gratuitement avec un extrait de 10 secondes dans Gradium Studio, sur{" "}
+                  <a
+                    href="https://studio.gradium.ai"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold underline underline-offset-4 transition-opacity hover:opacity-70"
+                    style={{ color: "var(--ask)" }}
+                  >
+                    studio.gradium.ai
+                  </a>
+                  .
+                </span>
+              }
             >
               <input
                 type="password"
