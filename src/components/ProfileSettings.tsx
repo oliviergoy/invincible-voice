@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { authFetch } from "@/lib/auth-fetch";
+import { recordWav } from "@/lib/record-wav";
 
 type Form = {
   display_name: string;
@@ -160,6 +161,21 @@ export function ProfileSettings() {
     setForm((f) => ({ ...f, [k]: v }));
   };
 
+  const voiceCreated = async (voice: LibraryVoice) => {
+    setLibrary((l) => (Array.isArray(l) ? [voice, ...l] : l));
+    set("gradium_voice_id", voice.id);
+    if (!userId) return;
+    const { error } = await supabase
+      .from("user_settings")
+      .upsert(
+        { user_id: userId, voice_provider: "gradium", gradium_voice_id: voice.id },
+        { onConflict: "user_id" },
+      );
+    setStatus(
+      error ? "Voix créée. Cliquez sur Enregistrer pour la garder." : "Voix créée et choisie ✓",
+    );
+  };
+
   return (
     <div className="mt-6">
       <Section num="01" color="var(--ask)" title="Mon profil">
@@ -233,6 +249,12 @@ export function ProfileSettings() {
               value={form.gradium_voice_id}
               onChange={(id) => set("gradium_voice_id", id)}
             />
+            {hasGradiumKey && Array.isArray(library) && (
+              <CreateGradiumVoice
+                defaultName={form.display_name.trim() || "Ma voix"}
+                onCreated={(voice) => void voiceCreated(voice)}
+              />
+            )}
           </>
         ) : (
           <>
@@ -310,8 +332,7 @@ function GradiumVoicePicker({
     <Field
       label="Ma voix"
       hint={
-        selected?.description ??
-        "Une voix clonée dans Gradium Studio apparaît en tête, sous « Mes voix »."
+        selected?.description ?? "Les voix que vous créez apparaissent en tête, sous « Mes voix »."
       }
     >
       <select
@@ -333,5 +354,210 @@ function GradiumVoicePicker({
         ))}
       </select>
     </Field>
+  );
+}
+
+const CREATE_ERRORS: Record<string, string> = {
+  bad_audio: "Gradium n'a pas pu lire ce fichier. Essayez un autre enregistrement.",
+  file_too_large: "Ce fichier dépasse 50 Mo. Choisissez un extrait plus court.",
+  invalid_key: "Votre clé Gradium n'est pas valide.",
+  voice_limit:
+    "Vous avez atteint le nombre de voix permis par votre offre Gradium (6 avec l'offre gratuite). Supprimez-en une dans Gradium Studio, sur studio.gradium.ai.",
+};
+
+function CreateGradiumVoice({
+  defaultName,
+  onCreated,
+}: {
+  defaultName: string;
+  onCreated: (voice: LibraryVoice) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState(defaultName);
+  const [language, setLanguage] = useState("fr");
+  const [sample, setSample] = useState<{ file: File; label: string } | null>(null);
+  const [recordingSeconds, setRecordingSeconds] = useState<number | null>(null);
+  const [consent, setConsent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const recorderRef = useRef<{ stop: () => Promise<File> } | null>(null);
+  const recording = recordingSeconds !== null;
+
+  const sampleUrl = useMemo(() => (sample ? URL.createObjectURL(sample.file) : null), [sample]);
+  useEffect(
+    () => () => {
+      if (sampleUrl) URL.revokeObjectURL(sampleUrl);
+    },
+    [sampleUrl],
+  );
+
+  useEffect(() => {
+    if (!recording) return;
+    const id = setInterval(() => setRecordingSeconds((s) => (s === null ? s : s + 1)), 1000);
+    return () => clearInterval(id);
+  }, [recording]);
+
+  const releaseMic = () => {
+    const recorder = recorderRef.current;
+    recorderRef.current = null;
+    setRecordingSeconds(null);
+    return recorder;
+  };
+
+  useEffect(
+    () => () => {
+      void recorderRef.current?.stop().catch(() => undefined);
+    },
+    [],
+  );
+
+  const startRecording = async () => {
+    setError(null);
+    try {
+      recorderRef.current = await recordWav();
+      setRecordingSeconds(0);
+    } catch {
+      setError("Impossible d'accéder au micro. Autorisez-le dans le navigateur.");
+    }
+  };
+
+  const stopRecording = async () => {
+    const seconds = recordingSeconds ?? 0;
+    const recorder = releaseMic();
+    if (!recorder) return;
+    try {
+      setSample({ file: await recorder.stop(), label: `Enregistrement de ${seconds} s` });
+    } catch {
+      setError("L'enregistrement est vide. Recommencez.");
+    }
+  };
+
+  const close = () => {
+    void releaseMic()
+      ?.stop()
+      .catch(() => undefined);
+    setSample(null);
+    setConsent(false);
+    setError(null);
+    setOpen(false);
+  };
+
+  const create = async () => {
+    if (!sample) return;
+    setBusy(true);
+    setError(null);
+    const body = new FormData();
+    body.append("audio_file", sample.file, sample.file.name);
+    body.append("name", name.trim());
+    body.append("language", language);
+    try {
+      const r = await authFetch("/api/gradium-voices", { method: "POST", body });
+      const data = (await r.json()) as { voice?: LibraryVoice; error?: string };
+      if (!r.ok || !data.voice) throw new Error(data.error);
+      onCreated(data.voice);
+      close();
+    } catch (err) {
+      setError(CREATE_ERRORS[(err as Error).message] ?? "La création a échoué. Réessayez.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!open) {
+    return (
+      <button type="button" className="btn btn-secondary" onClick={() => setOpen(true)}>
+        Créer ma voix
+      </button>
+    );
+  }
+
+  const muted = { color: "var(--muted)" };
+  return (
+    <div className="space-y-5 rounded-2xl border-2 p-5" style={{ borderColor: "var(--ink)" }}>
+      <h3 className="text-[20px] font-medium">Créer ma voix</h3>
+      <p className="text-[15px]" style={muted}>
+        Enregistrez-vous au moins 10 secondes, au calme et sans autre voix. Vous pouvez aussi
+        choisir un ancien enregistrement : mémo vocal, message ou vidéo.
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        {recording ? (
+          <button type="button" className="btn btn-say" onClick={() => void stopRecording()}>
+            Arrêter ({recordingSeconds} s)
+          </button>
+        ) : (
+          <button type="button" className="btn btn-secondary" onClick={() => void startRecording()}>
+            Enregistrer au micro
+          </button>
+        )}
+        <label className={`btn btn-secondary ${recording ? "pointer-events-none opacity-40" : ""}`}>
+          Choisir un fichier
+          <input
+            type="file"
+            accept="audio/*,video/*"
+            className="sr-only"
+            disabled={recording}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) setSample({ file, label: file.name });
+            }}
+          />
+        </label>
+      </div>
+      {sample && sampleUrl && (
+        <div className="space-y-2">
+          <p className="text-[15px]">{sample.label}</p>
+          <audio controls src={sampleUrl} className="w-full" />
+        </div>
+      )}
+      <Field label="Nom de la voix">
+        <input
+          className={inputClass}
+          value={name}
+          maxLength={100}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </Field>
+      <Field label="Langue parlée dans l'enregistrement">
+        <select
+          className={inputClass}
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+        >
+          {LANGUAGES.map(([code, label]) => (
+            <option key={code} value={code}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </Field>
+      <label className="flex min-h-[44px] items-center gap-3 text-[16px]">
+        <input
+          type="checkbox"
+          className="h-5 w-5"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+        />
+        C'est ma voix, ou j'ai l'accord de la personne enregistrée.
+      </label>
+      {error && (
+        <p className="text-[15px]" style={{ color: "var(--say)" }}>
+          {error}
+        </p>
+      )}
+      <div className="flex flex-wrap justify-end gap-3">
+        <button type="button" className="btn btn-secondary" onClick={close} disabled={busy}>
+          Annuler
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => void create()}
+          disabled={busy || recording || !sample || !name.trim() || !consent}
+        >
+          {busy ? "Création…" : "Créer la voix"}
+        </button>
+      </div>
+    </div>
   );
 }

@@ -60,6 +60,38 @@ export async function listGradiumVoices(
   return { voices };
 }
 
+export const GRADIUM_VOICE_LANGUAGES = ["fr", "en", "de", "es", "pt"];
+
+/** Gradium answers 201 even when it cannot read the audio: success is a non-null uid. */
+export async function createGradiumVoice(
+  key: string,
+  audio: File,
+  name: string,
+  language: string,
+): Promise<{ voice: LibraryVoice } | { error: string; status: number }> {
+  const form = new FormData();
+  form.append("audio_file", audio, audio.name);
+  form.append("name", name);
+  form.append("language", language);
+  const r = await fetch(`${GRADIUM_API}/voices/`, {
+    method: "POST",
+    headers: { "x-api-key": key },
+    body: form,
+  });
+  if (r.status === 401) return { error: "invalid_key", status: 400 };
+  if (r.status === 409) return { error: "voice_limit", status: 400 };
+  const body = (await r.json().catch(() => null)) as {
+    uid?: string | null;
+    error?: string | null;
+  } | null;
+  if (r.ok && body?.uid) {
+    return { voice: { id: body.uid, name, description: null, language, own: true } };
+  }
+  console.error("Gradium voice creation error", r.status, body);
+  if (r.ok && body?.error) return { error: "bad_audio", status: 400 };
+  return { error: "upstream_error", status: 502 };
+}
+
 export async function voiceName(voice: ActiveVoice): Promise<string | null> {
   if (voice.provider === "gradium") {
     const r = await fetch(`${GRADIUM_API}/voices/${encodeURIComponent(voice.voiceId)}`, {
