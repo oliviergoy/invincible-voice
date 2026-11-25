@@ -5,6 +5,7 @@ import direScreenshot from "@/assets/guide/dire.png";
 import fullscreenScreenshot from "@/assets/guide/plein-ecran-retourne.png";
 
 export const Route = createFileRoute("/guide")({
+  staticData: { sitemap: true },
   component: GuidePage,
   head: () => ({
     meta: [

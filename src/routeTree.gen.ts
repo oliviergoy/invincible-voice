@@ -14,6 +14,7 @@ import { Route as AskRouteImport } from './routes/ask'
 import { Route as DireRouteImport } from './routes/dire'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as ParametresRouteImport } from './routes/parametres'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiExpandRouteImport } from './routes/api/expand'
 import { Route as ApiGradiumVoicesRouteImport } from './routes/api/gradium-voices'
@@ -44,6 +45,11 @@ const GuideRoute = GuideRouteImport.update({
 const ParametresRoute = ParametresRouteImport.update({
   id: '/parametres',
   path: '/parametres',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/dire': typeof DireRoute
   '/guide': typeof GuideRoute
   '/parametres': typeof ParametresRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
   '/api/gradium-voices': typeof ApiGradiumVoicesRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/dire': typeof DireRoute
   '/guide': typeof GuideRoute
   '/parametres': typeof ParametresRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
   '/api/gradium-voices': typeof ApiGradiumVoicesRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/dire': typeof DireRoute
   '/guide': typeof GuideRoute
   '/parametres': typeof ParametresRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/api/expand': typeof ApiExpandRoute
   '/api/gradium-voices': typeof ApiGradiumVoicesRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/dire'
     | '/guide'
     | '/parametres'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/api/expand'
     | '/api/gradium-voices'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/dire'
     | '/guide'
     | '/parametres'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/api/expand'
     | '/api/gradium-voices'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/dire'
     | '/guide'
     | '/parametres'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/api/expand'
     | '/api/gradium-voices'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   DireRoute: typeof DireRoute
   GuideRoute: typeof GuideRoute
   ParametresRoute: typeof ParametresRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiExpandRoute: typeof ApiExpandRoute
   ApiGradiumVoicesRoute: typeof ApiGradiumVoicesRoute
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/parametres'
       fullPath: '/parametres'
       preLoaderRoute: typeof ParametresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   DireRoute: DireRoute,
   GuideRoute: GuideRoute,
   ParametresRoute: ParametresRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
   ApiExpandRoute: ApiExpandRoute,
   ApiGradiumVoicesRoute: ApiGradiumVoicesRoute,

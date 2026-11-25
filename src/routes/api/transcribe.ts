@@ -13,6 +13,7 @@ function jsonError(error: string, status: number) {
 }
 
 export const Route = createFileRoute("/api/transcribe")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

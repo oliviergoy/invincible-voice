@@ -4,6 +4,7 @@ import { getUserContext } from "@/lib/server-user";
 import { activeVoice, synthesize } from "@/lib/server-voice";
 
 export const Route = createFileRoute("/api/tts")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

@@ -6,6 +6,7 @@ import { GRADIUM_VOICE_LANGUAGES, createGradiumVoice, listGradiumVoices } from "
 const MAX_SAMPLE_BYTES = 50 * 1024 * 1024;
 
 export const Route = createFileRoute("/api/gradium-voices")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       GET: async ({ request }) => {

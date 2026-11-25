@@ -51,6 +51,7 @@ EXAMPLES
 }
 
 export const Route = createFileRoute("/api/expand")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

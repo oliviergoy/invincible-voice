@@ -12,10 +12,12 @@ import {
 import { ProfileSettings, Section } from "@/components/ProfileSettings";
 
 export const Route = createFileRoute("/parametres")({
+  staticData: { sitemap: false },
   component: ParametresPage,
   head: () => ({
     meta: [
       { title: "Invincible Voice — Paramètres" },
+      { name: "robots", content: "noindex, nofollow" },
       { name: "description", content: "Personnalisez votre présentation, votre IA, votre voix et vos documents dans Invincible Voice." },
       { property: "og:title", content: "Invincible Voice — Paramètres" },
       { property: "og:description", content: "Gérez vos réglages personnels, votre voix et vos documents." },

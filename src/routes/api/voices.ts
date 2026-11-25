@@ -4,6 +4,7 @@ import { getUserContext, jsonResponse } from "@/lib/server-user";
 import { activeVoice, voiceName } from "@/lib/server-voice";
 
 export const Route = createFileRoute("/api/voices")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       GET: async ({ request }) => {

@@ -7,6 +7,7 @@ import { recordWav } from "@/lib/record-wav";
 import FullscreenReader from "@/components/FullscreenReader";
 
 export const Route = createFileRoute("/ask")({
+  staticData: { sitemap: true },
   component: Index,
   head: () => ({
     meta: [

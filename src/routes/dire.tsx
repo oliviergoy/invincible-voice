@@ -6,6 +6,7 @@ import { authFetch, ERROR_HINTS } from "@/lib/auth-fetch";
 import FullscreenReader from "@/components/FullscreenReader";
 
 export const Route = createFileRoute("/dire")({
+  staticData: { sitemap: true },
   component: DirePage,
   head: () => ({
     meta: [

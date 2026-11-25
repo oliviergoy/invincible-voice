@@ -27,6 +27,7 @@ RÈGLES DURES
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
 export const Route = createFileRoute("/api/chat")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

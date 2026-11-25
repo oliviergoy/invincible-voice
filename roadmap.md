@@ -1,7 +1,7 @@
 # Roadmap
 
 - [x] Clés ANTHROPIC/ELEVENLABS globales — remplacées par les clés personnelles de chaque compte
-- [x] Comptes Google, voix + clé ElevenLabs perso, documents, réglages d'affichage, clé Claude/ChatGPT perso ; site reste caché
+- [x] Comptes Google, voix + clé ElevenLabs perso, documents, réglages d'affichage, clé Claude/ChatGPT perso
 - [x] Police des titres et sous-titres plus moderne : Sora, en droit
 - [x] Bouton « Paramètres » placé sous le titre « Invincible Voice » (retiré de la barre d'onglets)
 - [x] Exemples raccourcis : « Comment vas-tu ? » / « Présentes toi stp ? » sur Demande-moi ; « je boire » / « je dormir » sur Je veux te dire
@@ -12,3 +12,5 @@
 - [x] Guide + PDF : souligner au début que ça fonctionne sur téléphone, tablette et ordinateur
 - [x] Guide + PDF : souligner la possibilité de dicter une question au micro
 - [x] Guide + PDF : mettre à jour le mode d'emploi (voix Kyutai gratuite avec extrait de 10 secondes, studio.gradium.ai)
+- [x] SEO : ajouter l'icône du site et vérifier son affichage
+- [x] SEO : rendre le site visible aux moteurs de recherche, avec sitemap, tout en excluant les réglages personnels
