@@ -325,7 +325,7 @@ function GuidePage() {
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {[
               ["Votre présentation", "Indiquez qui vous êtes pour obtenir des réponses à la première personne."],
-              ["Votre voix", "Choisissez ElevenLabs ou Kyutai (Gradium), puis renseignez votre clé et la voix utilisée par le bouton Lire. Avec Kyutai, vous pouvez aussi créer votre propre voix à partir d'un enregistrement."],
+              ["Votre voix", "Choisissez ElevenLabs ou Kyutai (Gradium), puis renseignez votre clé et la voix utilisée par le bouton Lire. Avec Kyutai, créez gratuitement votre propre voix avec un extrait de 10 secondes sur studio.gradium.ai."],
               ["Vos documents", "Ajoutez des fichiers PDF, Word ou texte pour enrichir les réponses."],
             ].map(([title, text]) => (
               <div key={title} className="rounded-2xl p-5" style={{ background: "var(--white)" }}>

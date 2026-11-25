@@ -11,3 +11,4 @@
 - [x] Créer la version PDF téléchargeable du guide illustré
 - [x] Guide + PDF : souligner au début que ça fonctionne sur téléphone, tablette et ordinateur
 - [x] Guide + PDF : souligner la possibilité de dicter une question au micro
+- [x] Guide + PDF : mettre à jour le mode d'emploi (voix Kyutai gratuite avec extrait de 10 secondes, studio.gradium.ai)
